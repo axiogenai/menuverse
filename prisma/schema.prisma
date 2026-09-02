@@ -1,0 +1,197 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Restaurant {
+  id              String   @id @default(cuid())
+  name            String
+  slug            String   @unique
+  description     String?
+  logoUrl         String?
+  coverUrl        String?
+  address         String?
+  phone           String?
+  website         String?
+  cuisineType     String?
+  priceRange      String?  @default("$$")
+  isVerified      Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  settings        RestaurantSettings?
+  categories      Category[]
+  menuItems       MenuItem[]
+  reviews         Review[]
+  googleReviews   GoogleReview[]
+}
+
+model RestaurantSettings {
+  id                 String     @id @default(cuid())
+  restaurantId       String     @unique
+  restaurant         Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  primaryColor       String     @default("#f97316")
+  accentColor        String     @default("#ea580c")
+  qrLogoUrl          String?
+  qrFgColor          String     @default("#1c1917")
+  qrBgColor          String     @default("#ffffff")
+  qrFrameText        String     @default("SCAN FOR SOCIAL MENU")
+  showPrices         Boolean    @default(true)
+  enableReviews      Boolean    @default(true)
+  enablePhotoUploads Boolean    @default(true)
+  enableAiSummaries  Boolean    @default(true)
+  socialInstagram    String?
+  socialFacebook     String?
+  updatedAt          DateTime   @updatedAt
+}
+
+model Category {
+  id           String     @id @default(cuid())
+  restaurantId String
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  name         String
+  slug         String
+  description  String?
+  icon         String?    @default("Utensils")
+  displayOrder Int        @default(0)
+  isVisible    Boolean    @default(true)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  menuItems    MenuItem[]
+
+  @@unique([restaurantId, slug])
+}
+
+model MenuItem {
+  id                     String           @id @default(cuid())
+  restaurantId           String
+  restaurant             Restaurant       @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  categoryId             String
+  category               Category         @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  name                   String
+  slug                   String
+  description            String?
+  price                  Float
+  currency               String           @default("USD")
+  ingredients            String           @default("[]") // JSON stringified array
+  allergens              String           @default("[]") // JSON stringified array
+  isVegetarian           Boolean          @default(false)
+  isVegan                Boolean          @default(false)
+  isGlutenFree           Boolean          @default(false)
+  spicyLevel             Int              @default(0)
+  isSignature            Boolean          @default(false)
+  isChefSpecial          Boolean          @default(false)
+  isAvailable            Boolean          @default(true)
+  preparationTimeMinutes Int?
+  displayOrder           Int              @default(0)
+  createdAt              DateTime         @default(now())
+  updatedAt              DateTime         @updatedAt
+
+  images                 MenuItemImage[]
+  statistics             DishStatistics?
+  reviews                Review[]
+  aiSummary              AISummary?
+
+  @@unique([restaurantId, slug])
+}
+
+model MenuItemImage {
+  id           String   @id @default(cuid())
+  menuItemId   String
+  menuItem     MenuItem @relation(fields: [menuItemId], references: [id], onDelete: Cascade)
+  url          String
+  altText      String?
+  isPrimary    Boolean  @default(false)
+  displayOrder Int      @default(0)
+  createdAt    DateTime @default(now())
+}
+
+model DishStatistics {
+  id                       String   @id @default(cuid())
+  menuItemId               String   @unique
+  menuItem                 MenuItem @relation(fields: [menuItemId], references: [id], onDelete: Cascade)
+  totalRatings             Int      @default(0)
+  averageRating            Float    @default(0.0)
+  totalReviews             Int      @default(0)
+  customerPhotoCount       Int      @default(0)
+  recommendationPercentage Float    @default(0.0)
+  popularityScore          Float    @default(0.0)
+  trendScore               Float    @default(0.0)
+  fiveStarCount            Int      @default(0)
+  fourStarCount            Int      @default(0)
+  threeStarCount           Int      @default(0)
+  twoStarCount             Int      @default(0)
+  oneStarCount             Int      @default(0)
+  lastCalculatedAt         DateTime @default(now())
+}
+
+model Review {
+  id               String        @id @default(cuid())
+  menuItemId       String
+  menuItem         MenuItem      @relation(fields: [menuItemId], references: [id], onDelete: Cascade)
+  restaurantId     String
+  restaurant       Restaurant    @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  displayName      String        @default("Verified Diner")
+  avatarUrl        String?
+  rating           Int           // 1 to 5
+  reviewText       String
+  aiSentiment      String        @default("POSITIVE")
+  sentimentScore   Float         @default(0.8)
+  tasteRating      Int?
+  portionRating    Int?
+  valueRating      Int?
+  helpfulVotes     Int           @default(0)
+  reportCount      Int           @default(0)
+  moderationStatus String        @default("APPROVED")
+  moderationReason String?
+  ownerReplyText   String?
+  ownerRepliedAt   DateTime?
+  isGoogleReview   Boolean       @default(false)
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  images           ReviewImage[]
+}
+
+model ReviewImage {
+  id           String   @id @default(cuid())
+  reviewId     String
+  review       Review   @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  url          String
+  thumbnailUrl String?
+  caption      String?
+  helpfulVotes Int      @default(0)
+  createdAt    DateTime @default(now())
+}
+
+model AISummary {
+  id                     String   @id @default(cuid())
+  menuItemId             String   @unique
+  menuItem               MenuItem @relation(fields: [menuItemId], references: [id], onDelete: Cascade)
+  summaryText            String
+  positiveHighlights     String   @default("[]") // JSON stringified array
+  improvementSuggestions String   @default("[]") // JSON stringified array
+  topKeywords            String   @default("[]") // JSON stringified array
+  confidenceScore        Float    @default(0.9)
+  generatedAt            DateTime @default(now())
+  lastReviewCount        Int      @default(0)
+}
+
+model GoogleReview {
+  id           String     @id @default(cuid())
+  restaurantId String
+  restaurant   Restaurant @relation(fields: [restaurantId], references: [id], onDelete: Cascade)
+  authorName   String
+  authorPhotoUrl String?
+  rating       Int
+  text         String
+  relativeTime String?
+  publishTime  DateTime?
+  isImported   Boolean    @default(true)
+  createdAt    DateTime   @default(now())
+}
