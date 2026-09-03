@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { 
-  QrCode, 
+  Users, 
   Eye, 
   MessageSquareQuote, 
   Star, 
@@ -49,15 +49,8 @@ export default function DashboardOverviewPage() {
           </p>
         </div>
 
-        {/* Action Toolbar - Never broken / never wrapping awkwardly */}
-        <div className="flex items-center gap-2 shrink-0 flex-wrap sm:flex-nowrap">
-          <Link href="/dashboard/qr-code" className="shrink-0">
-            <Button variant="outline" size="sm" className="h-9 px-3 text-xs font-semibold text-slate-700 bg-white border-slate-200/90 hover:bg-slate-50 hover:text-slate-900 shadow-2xs rounded-lg flex items-center gap-1.5 shrink-0 whitespace-nowrap">
-              <QrCode className="w-3.5 h-3.5 text-slate-500" />
-              <span>QR Studio</span>
-            </Button>
-          </Link>
-
+        {/* Action Toolbar - Clean, mobile friendly */}
+        <div className="flex items-center gap-2 shrink-0">
           <Link href={`/r/${restaurant.slug}`} target="_blank" className="shrink-0">
             <Button variant="outline" size="sm" className="h-9 px-3 text-xs font-semibold text-slate-700 bg-white border-slate-200/90 hover:bg-slate-50 hover:text-slate-900 shadow-2xs rounded-lg flex items-center gap-1.5 shrink-0 whitespace-nowrap">
               <span>View Public Menu</span>
@@ -77,10 +70,10 @@ export default function DashboardOverviewPage() {
       {/* KPI Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatCard
-          title="Total QR Scans"
+          title="Total Menu Views"
           value={analytics.totalScans.toLocaleString()}
-          subtitle={`${analytics.uniqueVisitors} unique diners scanned`}
-          icon={QrCode}
+          subtitle={`${analytics.uniqueVisitors} unique diners visited`}
+          icon={Users}
           trend={{ value: "+18.4%", isPositive: true }}
         />
 

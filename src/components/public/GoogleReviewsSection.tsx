@@ -7,9 +7,8 @@ import {
   ExternalLink, 
   MessageSquarePlus, 
   ChevronDown,
-  Sparkles,
-  Flame,
-  Clock
+  Clock,
+  Flame
 } from "lucide-react";
 import { GoogleReview } from "@/types";
 
@@ -313,7 +312,7 @@ export function GoogleReviewsSection({
                   {/* Latest Badge on the #1 newest review */}
                   {isVeryLatest && (
                     <div className="absolute -top-2.5 right-3 bg-gradient-to-r from-amber-500 to-orange-500 text-stone-950 font-black text-[9px] px-2.5 py-0.5 rounded-full shadow-xs uppercase tracking-wider flex items-center gap-1 border border-amber-300">
-                      <Sparkles className="w-2.5 h-2.5" />
+                      <Clock className="w-2.5 h-2.5 text-stone-950" />
                       <span>Latest Review</span>
                     </div>
                   )}
