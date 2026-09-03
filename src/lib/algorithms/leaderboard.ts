@@ -3,9 +3,9 @@ import { MenuItem, LeaderboardCategory, LeaderboardDish } from "@/types";
 export function generateLeaderboard(
   dishes: MenuItem[],
   category: LeaderboardCategory,
-  limit = 10
+  limit = 50
 ): LeaderboardDish[] {
-  const availableDishes = dishes.filter((d) => d.isAvailable);
+  const availableDishes = dishes.filter((d) => d.isAvailable !== false);
 
   let ranked: { dish: MenuItem; score: number; highlightBadge: string }[] = [];
 
@@ -14,14 +14,15 @@ export function generateLeaderboard(
       ranked = availableDishes
         .map((dish) => {
           const stats = dish.statistics;
-          const recPct = stats?.recommendationPercentage || 0;
-          const reviewCount = stats?.totalReviews || 0;
-          // Weighted score by recommendation % and confidence
-          const score = (recPct * Math.min(reviewCount, 30)) / 30;
+          const reviewsCount = dish.reviews?.length || stats?.totalReviews || 0;
+          const recPct = stats?.recommendationPercentage ?? (reviewsCount > 0 ? 100 : 95);
+          const rating = stats?.averageRating || 5.0;
+          // Real-time compound score based on recommendation rate & review volume
+          const score = recPct * 10 + reviewsCount * 5 + rating * 2;
           return {
             dish,
-            score: Number(score.toFixed(1)),
-            highlightBadge: `${recPct}% Recommend (${reviewCount}+ reviews)`,
+            score,
+            highlightBadge: `${recPct}% Loved • ${reviewsCount} ${reviewsCount === 1 ? "review" : "reviews"}`,
           };
         })
         .sort((a, b) => b.score - a.score);
@@ -31,25 +32,27 @@ export function generateLeaderboard(
       ranked = availableDishes
         .map((dish) => {
           const stats = dish.statistics;
-          const rating = stats?.averageRating || 0;
-          const count = stats?.totalReviews || 0;
+          const rating = stats?.averageRating || (dish.isSignature ? 5.0 : 4.8);
+          const count = dish.reviews?.length || stats?.totalReviews || 0;
+          const score = rating * 100 + count;
           return {
             dish,
-            score: rating,
-            highlightBadge: `${rating.toFixed(1)} / 5.0 (${count} reviews)`,
+            score,
+            highlightBadge: `★ ${rating.toFixed(1)} (${count} ${count === 1 ? "review" : "reviews"})`,
           };
         })
-        .sort((a, b) => b.score - a.score || (b.dish.statistics?.totalReviews || 0) - (a.dish.statistics?.totalReviews || 0));
+        .sort((a, b) => b.score - a.score);
       break;
 
     case "MOST_REVIEWED":
       ranked = availableDishes
         .map((dish) => {
-          const count = dish.statistics?.totalReviews || 0;
+          const count = dish.reviews?.length || dish.statistics?.totalReviews || 0;
+          const rating = dish.statistics?.averageRating || 5.0;
           return {
             dish,
-            score: count,
-            highlightBadge: `${count} Verified Reviews`,
+            score: count * 10 + rating,
+            highlightBadge: `${count} Verified ${count === 1 ? "Review" : "Reviews"}`,
           };
         })
         .sort((a, b) => b.score - a.score);
@@ -58,11 +61,12 @@ export function generateLeaderboard(
     case "MOST_PHOTOGRAPHED":
       ranked = availableDishes
         .map((dish) => {
-          const photoCount = dish.statistics?.customerPhotoCount || dish.images.length;
+          const reviewPhotos = dish.reviews?.flatMap((r) => r.images || []).length || 0;
+          const totalPhotos = (dish.images?.length || 0) + reviewPhotos;
           return {
             dish,
-            score: photoCount,
-            highlightBadge: `${photoCount} Customer Photos`,
+            score: totalPhotos * 10 + (dish.statistics?.averageRating || 0),
+            highlightBadge: `${totalPhotos} Food ${totalPhotos === 1 ? "Photo" : "Photos"}`,
           };
         })
         .sort((a, b) => b.score - a.score);
@@ -72,26 +76,34 @@ export function generateLeaderboard(
     case "TRENDING_MONTH":
       ranked = availableDishes
         .map((dish) => {
-          const trend = dish.statistics?.trendScore || 0;
+          const reviews = dish.reviews || [];
+          const stats = dish.statistics;
+          // Calculate dynamic review velocity from actual review timestamps
+          const recentReviews = reviews.filter((r) => {
+            const ageDays = (Date.now() - new Date(r.createdAt).getTime()) / (1000 * 60 * 60 * 24);
+            return ageDays <= 7;
+          }).length;
+          const trendScore = (stats?.trendScore || 80) + recentReviews * 15;
           return {
             dish,
-            score: trend,
-            highlightBadge: `Velocity Index #${Math.round(trend)}`,
+            score: trendScore,
+            highlightBadge: `Trending Velocity #${Math.round(trendScore)}`,
           };
         })
         .sort((a, b) => b.score - a.score);
       break;
 
     case "HIDDEN_GEMS":
-      // High rating (>= 4.5) with lower review count (< 25)
       ranked = availableDishes
-        .filter((d) => (d.statistics?.averageRating || 0) >= 4.4 && (d.statistics?.totalReviews || 0) <= 30)
         .map((dish) => {
-          const rating = dish.statistics?.averageRating || 0;
+          const rating = dish.statistics?.averageRating || 5.0;
+          const reviewsCount = dish.reviews?.length || dish.statistics?.totalReviews || 0;
+          // Higher score for exceptionally rated dishes that are undiscovered (lower review count)
+          const gemScore = (rating * 20) - (reviewsCount * 0.5);
           return {
             dish,
-            score: rating,
-            highlightBadge: `Hidden Gem (${rating.toFixed(1)} Rating)`,
+            score: gemScore,
+            highlightBadge: `★ ${rating.toFixed(1)} Undiscovered Gem`,
           };
         })
         .sort((a, b) => b.score - a.score);
@@ -100,14 +112,14 @@ export function generateLeaderboard(
     case "BEST_VALUE":
       ranked = availableDishes
         .map((dish) => {
-          const rating = dish.statistics?.averageRating || 0;
+          const rating = dish.statistics?.averageRating || 5.0;
           const price = Math.max(dish.price, 1);
-          // Value index = (rating^2 / price) * 10
+          // Value index: Quality / Price ratio
           const valueIndex = Number(((Math.pow(rating, 2) / price) * 10).toFixed(1));
           return {
             dish,
             score: valueIndex,
-            highlightBadge: `High Value (Score ${valueIndex})`,
+            highlightBadge: `$${dish.price.toFixed(2)} • Value Score ${valueIndex}`,
           };
         })
         .sort((a, b) => b.score - a.score);
@@ -116,13 +128,14 @@ export function generateLeaderboard(
     case "CHEF_PICKS":
     default:
       ranked = availableDishes
-        .filter((d) => d.isSignature || d.isChefSpecial)
         .map((dish) => {
-          const pop = dish.statistics?.popularityScore || 0;
+          const signatureBonus = dish.isSignature ? 50 : dish.isChefSpecial ? 40 : 10;
+          const rating = dish.statistics?.averageRating || 5.0;
+          const score = signatureBonus + rating * 5;
           return {
             dish,
-            score: pop,
-            highlightBadge: dish.isSignature ? "Signature Dish" : "Chef Selection",
+            score,
+            highlightBadge: dish.isSignature ? "Chef Signature Item" : dish.isChefSpecial ? "Daily Special" : "Kitchen Recommendation",
           };
         })
         .sort((a, b) => b.score - a.score);
@@ -134,6 +147,6 @@ export function generateLeaderboard(
     dish: item.dish,
     score: item.score,
     highlightBadge: item.highlightBadge,
-    trendDelta: index % 3 === 0 ? 1 : index % 2 === 0 ? 2 : 0,
+    trendDelta: 0,
   }));
 }

@@ -11,9 +11,16 @@ import {
   ChefHat, 
   SlidersHorizontal,
   ArrowUpDown,
-  Plus
+  Plus,
+  Flame,
+  MessageSquare,
+  ArrowDownRight,
+  ArrowUpRight,
+  ChevronDown,
+  Check
 } from "lucide-react";
 import { MenuItem, Restaurant } from "@/types";
+import { cn } from "@/lib/utils";
 import { menuVerseStore } from "@/lib/seed-data";
 import { RestaurantHero } from "@/components/public/RestaurantHero";
 import { TrendingRibbon } from "@/components/public/TrendingRibbon";
@@ -22,9 +29,20 @@ import { DishCard } from "@/components/public/DishCard";
 import { DishDetailModal } from "@/components/public/DishDetailModal";
 import { WriteReviewModal } from "@/components/public/WriteReviewModal";
 import { QRModal } from "@/components/public/QRModal";
+import { GoogleReviewsSection } from "@/components/public/GoogleReviewsSection";
+import { WriteGoogleReviewModal } from "@/components/public/WriteGoogleReviewModal";
+import { RestaurantFooter } from "@/components/public/RestaurantFooter";
 import { Input } from "@/components/ui/input";
 
 type SortOption = "POPULARITY" | "RATING" | "REVIEWS" | "PRICE_ASC" | "PRICE_DESC";
+
+const SORT_OPTIONS: { id: SortOption; label: string; icon: React.ElementType }[] = [
+  { id: "POPULARITY", label: "Most Popular", icon: Flame },
+  { id: "RATING", label: "Highest Rated", icon: Star },
+  { id: "REVIEWS", label: "Most Reviewed", icon: MessageSquare },
+  { id: "PRICE_ASC", label: "Price: Low to High", icon: ArrowDownRight },
+  { id: "PRICE_DESC", label: "Price: High to Low", icon: ArrowUpRight },
+];
 
 export default function RestaurantPublicMenuPage() {
   const params = useParams();
@@ -34,10 +52,30 @@ export default function RestaurantPublicMenuPage() {
   const [restaurant, setRestaurant] = useState<Restaurant | null>(
     () => menuVerseStore.getRestaurantBySlug(slug) || menuVerseStore.getRestaurantBySlug("gusto-trattoria") || null
   );
+  const [mounted, setMounted] = useState(false);
   const [activeCategory, setActiveCategory] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState<string>("");
   const [selectedDiet, setSelectedDiet] = useState<string>("ALL");
   const [sortBy, setSortBy] = useState<SortOption>("POPULARITY");
+  const [isSortOpen, setIsSortOpen] = useState(false);
+  const sortRef = React.useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Close sort dropdown when clicking outside
+  useEffect(() => {
+    const handleOutside = (e: MouseEvent) => {
+      if (sortRef.current && !sortRef.current.contains(e.target as Node)) {
+        setIsSortOpen(false);
+      }
+    };
+    if (isSortOpen) {
+      document.addEventListener("mousedown", handleOutside);
+    }
+    return () => document.removeEventListener("mousedown", handleOutside);
+  }, [isSortOpen]);
   
   // Modals state
   const [selectedDish, setSelectedDish] = useState<MenuItem | null>(null);
@@ -45,6 +83,7 @@ export default function RestaurantPublicMenuPage() {
   const [reviewDish, setReviewDish] = useState<MenuItem | null>(null);
   const [isReviewOpen, setIsReviewOpen] = useState(false);
   const [isQRModalOpen, setIsQRModalOpen] = useState(false);
+  const [isWriteGoogleReviewOpen, setIsWriteGoogleReviewOpen] = useState(false);
 
   useEffect(() => {
     const update = () => {
@@ -56,7 +95,7 @@ export default function RestaurantPublicMenuPage() {
     return () => unsubscribe();
   }, [slug]);
 
-  if (!restaurant) {
+  if (!mounted || !restaurant) {
     return (
       <div className="min-h-screen flex items-center justify-center p-4 bg-[#faf8f5]">
         <div className="text-center space-y-3">
@@ -115,7 +154,7 @@ export default function RestaurantPublicMenuPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#faf8f5] text-stone-900 pb-24">
+    <div className="min-h-screen bg-[#faf8f5] text-stone-900 pb-6">
       <div className="container mx-auto max-w-5xl px-3 sm:px-4 pt-4 space-y-6">
         {/* Restaurant Header Hero */}
         <RestaurantHero
@@ -152,19 +191,67 @@ export default function RestaurantPublicMenuPage() {
               )}
             </div>
 
-            <div className="flex items-center gap-1.5 px-3 py-2 rounded-2xl bg-stone-50 border border-stone-200 shrink-0 text-xs">
-              <ArrowUpDown className="w-3.5 h-3.5 text-orange-500" />
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as SortOption)}
-                className="bg-transparent font-bold text-stone-700 focus:outline-none cursor-pointer text-xs"
+            {/* Luxury Sort Selector Popover */}
+            <div className="relative shrink-0" ref={sortRef}>
+              <button
+                type="button"
+                onClick={() => setIsSortOpen(!isSortOpen)}
+                className={cn(
+                  "flex items-center gap-2 h-11 px-3.5 rounded-2xl border text-xs font-bold transition-all shadow-2xs cursor-pointer active:scale-95",
+                  isSortOpen
+                    ? "bg-stone-900 text-white border-stone-900 shadow-xs"
+                    : "bg-stone-50/90 text-stone-800 border-stone-200 hover:bg-white hover:border-amber-400/60"
+                )}
               >
-                <option value="POPULARITY">Most Popular</option>
-                <option value="RATING">Highest Rated (⭐)</option>
-                <option value="REVIEWS">Most Reviewed</option>
-                <option value="PRICE_ASC">Price: Low to High</option>
-                <option value="PRICE_DESC">Price: High to Low</option>
-              </select>
+                {(() => {
+                  const curr = SORT_OPTIONS.find((s) => s.id === sortBy) || SORT_OPTIONS[0];
+                  const Icon = curr.icon;
+                  return (
+                    <>
+                      <Icon className={cn("w-3.5 h-3.5", isSortOpen ? "text-amber-400" : "text-amber-700")} />
+                      <span>{curr.label}</span>
+                    </>
+                  );
+                })()}
+                <ChevronDown className={cn("w-3.5 h-3.5 transition-transform duration-200", isSortOpen ? "rotate-180 text-white" : "text-stone-400")} />
+              </button>
+
+              {/* Luxury Popover Panel */}
+              {isSortOpen && (
+                <div className="absolute right-0 top-12 w-56 bg-white rounded-2xl border border-stone-200/90 shadow-2xl p-1.5 z-40 animate-in fade-in zoom-in-95 duration-150">
+                  <div className="text-[10px] uppercase font-bold text-stone-400 px-2.5 py-1.5 tracking-wider border-b border-stone-100 mb-1">
+                    Sort Dishes By
+                  </div>
+                  <div className="space-y-0.5">
+                    {SORT_OPTIONS.map((opt) => {
+                      const Icon = opt.icon;
+                      const isActive = sortBy === opt.id;
+                      return (
+                        <button
+                          key={opt.id}
+                          type="button"
+                          onClick={() => {
+                            setSortBy(opt.id);
+                            setIsSortOpen(false);
+                          }}
+                          className={cn(
+                            "w-full flex items-center justify-between px-2.5 py-2 rounded-xl text-xs font-bold transition-colors cursor-pointer text-left",
+                            isActive
+                              ? "bg-amber-50 text-amber-900 border border-amber-200/60"
+                              : "hover:bg-stone-50 text-stone-700 hover:text-stone-900"
+                          )}
+                        >
+                          <div className="flex items-center gap-2">
+                            <Icon className={cn("w-3.5 h-3.5", isActive ? "text-amber-700" : "text-stone-400")} />
+                            <span>{opt.label}</span>
+                          </div>
+                          {isActive && <Check className="w-3.5 h-3.5 text-amber-700" />}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
@@ -301,6 +388,17 @@ export default function RestaurantPublicMenuPage() {
             </div>
           )}
         </div>
+
+        {/* Google Customer Reviews Showcase Section */}
+        <GoogleReviewsSection
+          reviews={restaurant.googleReviews || []}
+          restaurantName={restaurant.name}
+          googlePlaceId={restaurant.googlePlaceId}
+          onOpenWriteGoogleReview={() => setIsWriteGoogleReviewOpen(true)}
+        />
+
+        {/* Slim Auto-adjusting Footer with team.axiogen.in */}
+        <RestaurantFooter />
       </div>
 
       {/* Modals */}
@@ -325,6 +423,17 @@ export default function RestaurantPublicMenuPage() {
           }}
         />
       )}
+
+      <WriteGoogleReviewModal
+        restaurantId={restaurant.id}
+        restaurantName={restaurant.name}
+        isOpen={isWriteGoogleReviewOpen}
+        onClose={() => setIsWriteGoogleReviewOpen(false)}
+        onReviewSubmitted={() => {
+          const updated = menuVerseStore.getRestaurantBySlug(slug);
+          if (updated) setRestaurant({ ...updated });
+        }}
+      />
 
       <QRModal
         restaurant={restaurant}

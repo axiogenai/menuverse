@@ -11,10 +11,10 @@ import { analyzeReviewSentiment, screenReviewContent } from "@/lib/ai/sentiment"
 import { menuVerseStore } from "@/lib/seed-data";
 
 interface WriteReviewModalProps {
-  dish: MenuItem;
+  dish: MenuItem | null;
   isOpen: boolean;
   onClose: () => void;
-  onReviewSubmitted: (newReview: Review) => void;
+  onReviewSubmitted?: (newReview: Review) => void;
 }
 
 export function WriteReviewModal({
@@ -33,7 +33,22 @@ export function WriteReviewModal({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
-  if (!isOpen) return null;
+  // Automatically reset form whenever modal opens or active dish changes
+  React.useEffect(() => {
+    if (isOpen) {
+      setRating(5);
+      setDisplayName("");
+      setReviewText("");
+      setTasteRating(5);
+      setPortionRating(5);
+      setValueRating(5);
+      setPhotoUrl("");
+      setErrorMsg(null);
+      setIsSubmitting(false);
+    }
+  }, [isOpen, dish?.id]);
+
+  if (!isOpen || !dish) return null;
 
   // Real-time sentiment preview
   const sentimentPreview = reviewText.length > 5 ? analyzeReviewSentiment(reviewText, rating) : null;
@@ -118,62 +133,62 @@ export function WriteReviewModal({
 
     setTimeout(() => {
       setIsSubmitting(false);
-      onReviewSubmitted(newRev);
+      if (onReviewSubmitted) onReviewSubmitted(newRev);
       onClose();
     }, 600);
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-fade-in overflow-y-auto">
-      <div className="relative w-full max-w-lg bg-white text-stone-900 rounded-3xl shadow-2xl border border-stone-200 overflow-hidden my-8">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/60 backdrop-blur-xs animate-fade-in overflow-y-auto">
+      <div className="relative w-full max-w-md bg-white text-stone-900 rounded-2xl shadow-2xl border border-stone-200 overflow-hidden my-4">
         {/* Header */}
-        <div className="relative px-6 pt-6 pb-4 border-b border-stone-100 bg-stone-50">
+        <div className="relative px-5 pt-5 pb-3 border-b border-stone-100 bg-stone-50/80">
           <div className="flex items-start justify-between">
-            <div className="space-y-1">
-              <span className="text-xs font-black text-orange-600 uppercase tracking-wider flex items-center gap-1">
-                Post Verified Diner Review
+            <div className="space-y-0.5">
+              <span className="text-[10px] font-semibold text-amber-700 uppercase tracking-wider block">
+                Post Diner Feedback
               </span>
-              <h3 className="text-lg font-black text-stone-900">
+              <h3 className="text-sm sm:text-base font-bold text-stone-900">
                 {dish.name}
               </h3>
             </div>
             <button
               onClick={onClose}
-              className="p-2 rounded-full text-stone-400 hover:text-stone-700 hover:bg-stone-200 transition-colors"
+              className="p-1.5 rounded-lg text-stone-400 hover:text-stone-700 hover:bg-stone-200/60 transition-colors cursor-pointer"
             >
-              <X className="w-5 h-5" />
+              <X className="w-4 h-4" />
             </button>
           </div>
         </div>
 
         {/* Form Body */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-4 text-left bg-white">
+        <form onSubmit={handleSubmit} className="p-4 space-y-3.5 text-left bg-white">
           {errorMsg && (
-            <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-bold">
+            <div className="p-2.5 rounded-lg bg-rose-50 border border-rose-200 text-rose-700 text-xs font-medium">
               {errorMsg}
             </div>
           )}
 
           {/* Primary Star Rating */}
-          <div className="space-y-2 text-center p-4 rounded-2xl bg-stone-50 border border-stone-100">
-            <label className="text-xs font-bold text-stone-600 block uppercase tracking-wider">
+          <div className="space-y-2 text-center p-3.5 rounded-xl bg-stone-50 border border-stone-100">
+            <label className="text-[11px] font-semibold text-stone-500 block uppercase tracking-wider">
               Overall Dish Rating
             </label>
-            <div className="flex justify-center">
+            <div className="flex justify-center py-1">
               <StarRating
                 rating={rating}
-                size="lg"
+                size="xl"
                 interactive
                 onRatingChange={setRating}
               />
             </div>
-            <span className="text-xs font-extrabold text-orange-600 block">
+            <span className="text-xs font-semibold text-amber-800 block transition-all duration-200">
               {rating === 5
-                ? "5.0 - Unforgettable Culinary Perfection"
+                ? "5.0 - Culinary Perfection"
                 : rating === 4
-                ? "4.0 - Very Good & Highly Recommended"
+                ? "4.0 - Highly Recommended"
                 : rating === 3
-                ? "3.0 - Satisfactory / Standard"
+                ? "3.0 - Standard & Good"
                 : rating === 2
                 ? "2.0 - Room for Improvement"
                 : "1.0 - Disappointing"}
@@ -182,20 +197,20 @@ export function WriteReviewModal({
 
           {/* Aspect Ratings (Taste, Portion, Value) */}
           <div className="grid grid-cols-3 gap-2">
-            <div className="p-2.5 rounded-xl bg-stone-50 border border-stone-200 text-center space-y-1">
-              <span className="text-[11px] font-bold text-stone-600">Taste</span>
+            <div className="p-2 rounded-lg bg-stone-50 border border-stone-200 text-center space-y-0.5">
+              <span className="text-[10px] font-medium text-stone-500">Taste</span>
               <div className="flex justify-center">
                 <StarRating rating={tasteRating} size="sm" interactive onRatingChange={setTasteRating} />
               </div>
             </div>
-            <div className="p-2.5 rounded-xl bg-stone-50 border border-stone-200 text-center space-y-1">
-              <span className="text-[11px] font-bold text-stone-600">Portion</span>
+            <div className="p-2 rounded-lg bg-stone-50 border border-stone-200 text-center space-y-0.5">
+              <span className="text-[10px] font-medium text-stone-500">Portion</span>
               <div className="flex justify-center">
                 <StarRating rating={portionRating} size="sm" interactive onRatingChange={setPortionRating} />
               </div>
             </div>
-            <div className="p-2.5 rounded-xl bg-stone-50 border border-stone-200 text-center space-y-1">
-              <span className="text-[11px] font-bold text-stone-600">Value</span>
+            <div className="p-2 rounded-lg bg-stone-50 border border-stone-200 text-center space-y-0.5">
+              <span className="text-[10px] font-medium text-stone-500">Value</span>
               <div className="flex justify-center">
                 <StarRating rating={valueRating} size="sm" interactive onRatingChange={setValueRating} />
               </div>
@@ -203,52 +218,52 @@ export function WriteReviewModal({
           </div>
 
           {/* Display Name */}
-          <div className="space-y-1.5">
-            <label className="text-xs font-bold text-stone-800">
+          <div className="space-y-1">
+            <label className="text-xs font-semibold text-stone-700">
               Your Name / Handle
             </label>
             <Input
               type="text"
-              placeholder="e.g. Maya Lin or FoodieExplorer"
+              placeholder="e.g. Maya Lin"
               value={displayName}
               onChange={(e) => setDisplayName(e.target.value)}
-              className="bg-white border-stone-200 text-stone-900"
+              className="bg-white border-stone-200 text-xs h-8.5"
               required
             />
           </div>
 
           {/* Review Text */}
-          <div className="space-y-1.5">
-            <label className="text-xs font-bold text-stone-800 flex items-center justify-between">
+          <div className="space-y-1">
+            <label className="text-xs font-semibold text-stone-700 flex items-center justify-between">
               <span>Your Review & Flavor Notes</span>
               {sentimentPreview && (
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-200">
-                  AI Sentiment: {sentimentPreview.sentiment}
+                <span className="text-[10px] font-semibold px-2 py-0.2 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">
+                  AI: {sentimentPreview.sentiment}
                 </span>
               )}
             </label>
             <textarea
-              rows={3}
-              placeholder="Describe the flavors, texture, spice level, and whether you'd order it again..."
+              rows={2.5}
+              placeholder="Describe the flavors, texture, and whether you'd order it again..."
               value={reviewText}
               onChange={(e) => setReviewText(e.target.value)}
-              className="w-full rounded-xl border border-stone-200 bg-white p-3 text-xs text-stone-900 placeholder:text-stone-400 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500 transition-all"
+              className="w-full rounded-lg border border-stone-200 bg-white p-2.5 text-xs text-stone-900 placeholder:text-stone-400 focus:outline-none focus:ring-1 focus:ring-stone-900 font-normal"
               required
             />
           </div>
 
-          {/* Real Photo Attachment with File Upload or URL */}
-          <div className="space-y-2">
-            <label className="text-xs font-bold text-stone-800 flex items-center justify-between">
+          {/* Photo Upload */}
+          <div className="space-y-1.5">
+            <label className="text-xs font-semibold text-stone-700 flex items-center justify-between">
               <span className="flex items-center gap-1.5">
-                <Camera className="w-3.5 h-3.5 text-orange-500" />
+                <Camera className="w-3.5 h-3.5 text-stone-600" />
                 Attach Food Photo
               </span>
               {photoUrl && (
                 <button
                   type="button"
                   onClick={() => setPhotoUrl("")}
-                  className="text-[10px] text-rose-600 hover:underline font-bold"
+                  className="text-[10px] text-rose-600 hover:underline font-semibold cursor-pointer"
                 >
                   Remove photo
                 </button>
@@ -256,8 +271,8 @@ export function WriteReviewModal({
             </label>
 
             <div className="flex items-center gap-2">
-              <label className="flex-1 flex items-center justify-center gap-2 px-3 py-2 rounded-xl bg-stone-50 border border-stone-200 text-stone-700 hover:bg-stone-100 cursor-pointer text-xs font-bold transition-colors">
-                <Upload className="w-4 h-4 text-orange-500" />
+              <label className="flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-lg bg-stone-50 border border-stone-200 text-stone-700 hover:bg-stone-100 cursor-pointer text-xs font-semibold transition-colors">
+                <Upload className="w-3.5 h-3.5 text-stone-500" />
                 <span>Upload from Device</span>
                 <input
                   type="file"
@@ -274,13 +289,13 @@ export function WriteReviewModal({
                   value={photoUrl.startsWith("data:") ? "(Photo Uploaded)" : photoUrl}
                   onChange={(e) => setPhotoUrl(e.target.value)}
                   disabled={photoUrl.startsWith("data:")}
-                  className="bg-white border-stone-200 text-stone-900 text-xs"
+                  className="bg-white border-stone-200 text-xs h-8.5"
                 />
               </div>
             </div>
 
             {photoUrl && (
-              <div className="relative h-24 w-24 rounded-xl overflow-hidden border border-stone-200 shadow-xs">
+              <div className="relative h-18 w-18 rounded-lg overflow-hidden border border-stone-200 shadow-2xs">
                 <img
                   src={photoUrl}
                   alt="Review upload preview"
@@ -291,17 +306,17 @@ export function WriteReviewModal({
           </div>
 
           {/* Submit Action */}
-          <div className="pt-2 flex items-center justify-end gap-2">
-            <Button type="button" variant="ghost" onClick={onClose} className="text-stone-600 hover:text-stone-900 font-semibold">
+          <div className="pt-2 flex items-center justify-end gap-2 border-t border-stone-100">
+            <Button type="button" variant="ghost" onClick={onClose} className="text-stone-600 hover:text-stone-900 text-xs h-8.5 rounded-lg">
               Cancel
             </Button>
             <Button
               type="submit"
               disabled={isSubmitting}
-              className="bg-orange-600 hover:bg-orange-500 text-white font-bold rounded-xl shadow-md shadow-orange-600/20 hover:scale-105 active:scale-95 transition-all"
+              className="bg-stone-900 hover:bg-stone-800 text-white font-semibold rounded-lg text-xs h-8.5 px-3.5 shadow-xs cursor-pointer"
             >
-              <Check className="w-4 h-4 mr-1.5" />
-              {isSubmitting ? "Publishing..." : "Submit Verified Review"}
+              <Check className="w-3.5 h-3.5 mr-1" />
+              {isSubmitting ? "Publishing..." : "Submit Review"}
             </Button>
           </div>
         </form>

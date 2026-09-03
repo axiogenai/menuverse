@@ -5,10 +5,19 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function formatPrice(price: number, currency = "USD"): string {
+export function formatPrice(price: number, currency = "INR"): string {
+  const curr = currency || "INR";
+  if (curr === "INR") {
+    return new Intl.NumberFormat("en-IN", {
+      style: "currency",
+      currency: "INR",
+      minimumFractionDigits: Number.isInteger(price) ? 0 : 2,
+      maximumFractionDigits: 2,
+    }).format(price);
+  }
   return new Intl.NumberFormat("en-US", {
     style: "currency",
-    currency,
+    currency: curr,
     minimumFractionDigits: Number.isInteger(price) ? 0 : 2,
     maximumFractionDigits: 2,
   }).format(price);

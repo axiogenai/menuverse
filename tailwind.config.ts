@@ -9,6 +9,28 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        sans: [
+          "var(--font-sans)",
+          "-apple-system",
+          "BlinkMacSystemFont",
+          '"Segoe UI"',
+          "Roboto",
+          "sans-serif",
+        ],
+        serif: [
+          "var(--font-serif)",
+          "Georgia",
+          "Cambria",
+          "serif",
+        ],
+        luxury: [
+          "var(--font-luxury)",
+          "var(--font-serif)",
+          "Georgia",
+          "serif",
+        ],
+      },
       colors: {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",

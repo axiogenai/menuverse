@@ -14,9 +14,7 @@ import { Button } from "@/components/ui/button";
 import { ReviewReplyModal } from "@/components/dashboard/ReviewReplyModal";
 
 export default function ReviewsManagementPage() {
-  const [restaurant, setRestaurant] = useState<Restaurant | null>(
-    () => menuVerseStore.getRestaurantBySlug() || null
-  );
+  const [restaurant, setRestaurant] = useState<Restaurant | null>(null);
   const [filter, setFilter] = useState<"ALL" | "UNREPLIED" | "POSITIVE" | "NEGATIVE">("ALL");
   const [replyingReview, setReplyingReview] = useState<Review | null>(null);
 
@@ -49,181 +47,176 @@ export default function ReviewsManagementPage() {
   };
 
   return (
-    <div className="space-y-6">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-black text-stone-900 flex items-center gap-2">
-            <MessageSquareQuote className="w-6 h-6 text-orange-600" />
-            Permanent Review Feed & Replies
-          </h1>
-          <p className="text-xs text-stone-500 font-medium">
-            Monitor diner sentiment, respond to reviews with verified owner badge, and review flagged posts
+    <div className="space-y-6 max-w-7xl mx-auto">
+      {/* Header Bar */}
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-5 border-b border-slate-200/80">
+        <div className="space-y-1">
+          <div className="flex items-center gap-2.5">
+            <h1 className="text-2xl font-bold tracking-tight text-slate-900">
+              Reviews & Replies
+            </h1>
+            <span className="inline-flex items-center px-2.5 py-0.5 rounded text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200">
+              {reviews.length} Reviews Total
+            </span>
+          </div>
+          <p className="text-xs text-slate-500 font-normal">
+            Monitor diner sentiment, respond to reviews with verified owner authority, and track ratings.
           </p>
         </div>
 
-        <div className="flex items-center gap-2 bg-white border border-stone-200 p-2 rounded-2xl text-xs shadow-xs">
-          <span className="px-2 font-bold text-stone-600">Unreplied:</span>
-          <span className="px-2.5 py-0.5 rounded-lg bg-orange-600 text-white font-black">
-            {unrepliedCount}
-          </span>
+        <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 bg-white border border-slate-200 px-3 py-1.5 rounded-lg text-xs shadow-2xs">
+            <span className="font-medium text-slate-600">Pending Replies:</span>
+            <span className="px-2 py-0.5 rounded font-bold text-xs bg-orange-50 text-orange-700 border border-orange-200">
+              {unrepliedCount}
+            </span>
+          </div>
         </div>
       </div>
 
       {/* Filter Tabs */}
-      <div className="flex items-center gap-2 overflow-x-auto hide-scrollbar text-xs">
+      <div className="flex items-center gap-1.5 overflow-x-auto text-xs">
         <button
           onClick={() => setFilter("ALL")}
-          className={`px-4 py-2 rounded-2xl font-black transition-all ${
+          className={`px-3 py-1.5 rounded-lg font-medium transition-colors shrink-0 ${
             filter === "ALL"
-              ? "bg-orange-600 text-white shadow-md shadow-orange-600/20"
-              : "bg-white text-stone-700 border border-stone-200 hover:bg-stone-100 shadow-xs"
+              ? "bg-slate-900 text-white font-semibold shadow-xs"
+              : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-50"
           }`}
         >
           All Reviews ({reviews.length})
         </button>
         <button
           onClick={() => setFilter("UNREPLIED")}
-          className={`px-4 py-2 rounded-2xl font-black transition-all ${
+          className={`px-3 py-1.5 rounded-lg font-medium transition-colors shrink-0 ${
             filter === "UNREPLIED"
-              ? "bg-orange-600 text-white shadow-md shadow-orange-600/20"
-              : "bg-white text-stone-700 border border-stone-200 hover:bg-stone-100 shadow-xs"
+              ? "bg-slate-900 text-white font-semibold shadow-xs"
+              : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-50"
           }`}
         >
           Needs Reply ({unrepliedCount})
         </button>
         <button
           onClick={() => setFilter("POSITIVE")}
-          className={`px-4 py-2 rounded-2xl font-black transition-all ${
+          className={`px-3 py-1.5 rounded-lg font-medium transition-colors shrink-0 ${
             filter === "POSITIVE"
-              ? "bg-emerald-600 text-white shadow-md shadow-emerald-600/20"
-              : "bg-white text-stone-700 border border-stone-200 hover:bg-stone-100 shadow-xs"
+              ? "bg-slate-900 text-white font-semibold shadow-xs"
+              : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-50"
           }`}
         >
           Positive Sentiment
         </button>
         <button
           onClick={() => setFilter("NEGATIVE")}
-          className={`px-4 py-2 rounded-2xl font-black transition-all ${
+          className={`px-3 py-1.5 rounded-lg font-medium transition-colors shrink-0 ${
             filter === "NEGATIVE"
-              ? "bg-rose-600 text-white shadow-md shadow-rose-600/20"
-              : "bg-white text-stone-700 border border-stone-200 hover:bg-stone-100 shadow-xs"
+              ? "bg-slate-900 text-white font-semibold shadow-xs"
+              : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-50"
           }`}
         >
-          Critical Sentiment
+          Needs Attention
         </button>
       </div>
 
       {/* Review List */}
       {filteredReviews.length === 0 ? (
-        <div className="text-center py-16 bg-white rounded-3xl border border-stone-200/90 shadow-sm p-6 space-y-3">
-          <div className="flex h-12 w-12 mx-auto items-center justify-center rounded-2xl bg-orange-50 text-orange-600">
-            <MessageSquareQuote className="w-6 h-6" />
+        <div className="text-center py-16 bg-white rounded-xl border border-slate-200 shadow-xs p-6 space-y-3">
+          <div className="flex h-10 w-10 mx-auto items-center justify-center rounded-lg bg-slate-100 text-slate-600">
+            <MessageSquareQuote className="w-5 h-5" />
           </div>
-          <h3 className="text-sm font-bold text-stone-900">No reviews found</h3>
-          <p className="text-xs text-stone-500 font-medium max-w-sm mx-auto">
-            When diners scan your live QR menu and submit dish reviews, they will appear here in real-time.
+          <h3 className="text-sm font-semibold text-slate-900">No reviews found</h3>
+          <p className="text-xs text-slate-500 max-w-sm mx-auto">
+            When diners scan your live QR menu and submit reviews, they will appear here in real-time.
           </p>
         </div>
       ) : (
-        <div className="space-y-4">
+        <div className="space-y-3">
           {filteredReviews.map((rev) => {
             const dish = restaurant.menuItems?.find((d) => d.id === rev.menuItemId);
-            const sentimentStyle = getSentimentColor(rev.aiSentiment);
+            const dishImage = dish?.images?.[0]?.url || rev.images?.[0]?.url;
 
             return (
               <div
                 key={rev.id}
-                className="p-5 rounded-3xl bg-white border border-stone-200/90 space-y-4 shadow-sm hover:border-orange-300 transition-colors"
+                className="p-4 rounded-xl bg-white border border-slate-200/90 shadow-[0_1px_3px_rgba(0,0,0,0.04)] space-y-2.5 hover:border-slate-300 transition-colors"
               >
-                {/* Top Row: User & Dish Tag */}
-                <div className="flex items-start justify-between gap-3">
-                  <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-full overflow-hidden bg-stone-100 shrink-0 border border-stone-200">
+                {/* Header Row: User Info & Star Rating on Left + Dish Thumbnail on Right */}
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <div className="h-8 w-8 rounded-full overflow-hidden bg-slate-100 shrink-0 border border-slate-200">
                       {rev.avatarUrl ? (
                         <img src={rev.avatarUrl} alt="" className="w-full h-full object-cover" />
                       ) : (
-                        <div className="w-full h-full flex items-center justify-center font-bold text-stone-700">
+                        <div className="w-full h-full flex items-center justify-center font-bold text-xs text-slate-700">
                           {rev.displayName.charAt(0)}
                         </div>
                       )}
                     </div>
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <span className="font-black text-sm text-stone-900">
-                          {rev.displayName}
-                        </span>
-                        <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 font-bold border border-emerald-200">
-                          Verified Diner
-                        </span>
+                    <div className="flex items-center gap-2 flex-wrap min-w-0">
+                      <span className="font-semibold text-xs text-slate-900 truncate">
+                        {rev.displayName}
+                      </span>
+                      <span className="text-[10px] px-1.5 py-0.2 rounded bg-slate-100 text-slate-600 font-medium">
+                        Verified Diner
+                      </span>
+                      <span className="text-slate-300 hidden sm:inline">•</span>
+                      <div className="flex items-center">
+                        <StarRating rating={rev.rating} size="sm" showValue={true} />
                       </div>
-                      <span className="text-[11px] text-stone-500 font-medium">
+                      <span className="text-[11px] text-slate-400 font-normal">
                         {formatRelativeTime(rev.createdAt)}
                       </span>
                     </div>
                   </div>
 
+                  {/* Dish Tag with Integrated Image on Right */}
                   {dish && (
-                    <div className="px-3 py-1 rounded-xl bg-orange-50 border border-orange-200 text-orange-700 font-bold text-xs flex items-center gap-1.5">
-                      <Utensils className="w-3.5 h-3.5" />
-                      <span>{dish.name}</span>
+                    <div className="flex items-center gap-1.5 p-1 pl-1.5 pr-2.5 rounded-lg bg-slate-50 border border-slate-200 text-slate-700 font-medium text-xs shrink-0">
+                      {dishImage ? (
+                        <img
+                          src={dishImage}
+                          alt={dish.name}
+                          className="w-5 h-5 rounded object-cover shrink-0 border border-slate-200"
+                        />
+                      ) : (
+                        <Utensils className="w-3.5 h-3.5 text-slate-500" />
+                      )}
+                      <span className="truncate max-w-[120px] sm:max-w-[180px]">{dish.name}</span>
                     </div>
                   )}
                 </div>
 
-                {/* Star & Sentiment Bar */}
-                <div className="flex items-center gap-3 flex-wrap">
-                  <StarRating rating={rev.rating} size="sm" />
-                  <span className={`text-[11px] font-bold px-2.5 py-0.5 rounded-full border ${sentimentStyle.bg} ${sentimentStyle.text} ${sentimentStyle.border}`}>
-                    AI Sentiment: {rev.aiSentiment}
-                  </span>
-                  <span className="text-[11px] text-stone-500 font-medium">
-                    • {rev.helpfulVotes} found helpful
-                  </span>
-                </div>
-
                 {/* Review Text */}
-                <p className="text-xs text-stone-800 leading-relaxed font-medium">
+                <p className="text-xs text-slate-700 leading-relaxed font-normal sm:pl-10.5">
                   {rev.reviewText}
                 </p>
 
-                {/* Photo Attachments */}
-                {rev.images && rev.images.length > 0 && (
-                  <div className="flex gap-2">
-                    {rev.images.map((img) => (
-                      <div key={img.id} className="h-16 w-16 rounded-xl overflow-hidden border border-stone-200">
-                        <img src={img.url} alt="" className="w-full h-full object-cover" />
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                {/* Owner Reply Section */}
+                {/* Owner Reply Section - Ultra Slim */}
                 {rev.ownerReplyText ? (
-                  <div className="p-3.5 rounded-2xl bg-orange-50/70 border border-orange-200/80 text-xs space-y-1">
-                    <div className="flex items-center justify-between text-[11px] font-black text-orange-800">
-                      <span className="flex items-center gap-1">
-                        <ChefHat className="w-3.5 h-3.5" />
-                        Executive Chef / Owner Official Reply:
-                      </span>
-                      <button
-                        onClick={() => setReplyingReview(rev)}
-                        className="text-orange-600 hover:underline font-bold"
-                      >
-                        Edit Reply
-                      </button>
+                  <div className="sm:ml-10.5 p-2.5 rounded-lg bg-slate-50 border-l-2 border-slate-900 text-xs flex items-start justify-between gap-2">
+                    <div className="space-y-0.5 min-w-0">
+                      <span className="font-semibold text-[11px] text-slate-900 block">Owner Response:</span>
+                      <p className="text-slate-600 italic font-normal text-xs">{rev.ownerReplyText}</p>
                     </div>
-                    <p className="text-stone-700 italic font-medium">"{rev.ownerReplyText}"</p>
+                    <button
+                      onClick={() => setReplyingReview(rev)}
+                      className="text-xs text-slate-500 hover:text-slate-900 font-medium shrink-0 pt-0.5"
+                    >
+                      Edit
+                    </button>
                   </div>
                 ) : (
-                  <div className="pt-2 flex items-center justify-end">
+                  <div className="sm:pl-10.5 flex items-center justify-between text-xs text-slate-400 pt-0.5">
+                    <span className="text-[11px]">
+                      {rev.helpfulVotes > 0 ? `${rev.helpfulVotes} diners found this helpful` : ""}
+                    </span>
                     <Button
                       onClick={() => setReplyingReview(rev)}
-                      className="bg-orange-600 hover:bg-orange-500 text-white font-bold rounded-xl flex items-center gap-1.5 shadow-md shadow-orange-600/20 hover:scale-105 active:scale-95 transition-all"
+                      className="h-7 px-2.5 text-xs font-semibold text-white bg-slate-900 hover:bg-slate-800 rounded-md shadow-xs flex items-center gap-1.5 transition-colors"
                       size="sm"
                     >
-                      <ChefHat className="w-4 h-4" />
-                      <span>Reply as Restaurant Owner</span>
+                      <ChefHat className="w-3 h-3 text-orange-400" />
+                      <span>Reply</span>
                     </Button>
                   </div>
                 )}

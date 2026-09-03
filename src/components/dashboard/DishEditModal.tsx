@@ -105,7 +105,7 @@ export function DishEditModal({
       slug: slugify(name),
       categoryId,
       price: parseFloat(price) || 0,
-      currency: "USD",
+      currency: "INR",
       description,
       preparationTimeMinutes: prepTime ? parseInt(prepTime) : null,
       spicyLevel,
@@ -194,14 +194,14 @@ export function DishEditModal({
           <div className="grid grid-cols-2 gap-4">
             <div className="space-y-1.5">
               <label className="text-xs font-bold text-stone-700">
-                Price (USD $)
+                Price (INR ₹)
               </label>
               <Input
                 type="number"
-                step="0.5"
+                step="1"
                 value={price}
                 onChange={(e) => setPrice(e.target.value)}
-                placeholder="24.00"
+                placeholder="500"
                 className="bg-white border-stone-200 text-stone-900"
                 required
               />
@@ -263,15 +263,18 @@ export function DishEditModal({
 
           {/* Description */}
           <div className="space-y-1.5">
-            <label className="text-xs font-bold text-stone-700">
-              Culinary Description
-            </label>
+            <div className="flex items-center justify-between">
+              <label className="text-xs font-semibold text-slate-700">
+                Culinary Description
+              </label>
+              <span className="text-[10px] text-slate-400">Concise (1–2 lines)</span>
+            </div>
             <textarea
               rows={2}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="Describe the sauce, technique, texture..."
-              className="w-full rounded-xl border border-stone-200 bg-white p-3 text-xs text-stone-900 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-orange-500"
+              placeholder="Describe key ingredients, culinary technique, or flavor profile..."
+              className="w-full rounded-lg border border-slate-200 bg-white p-2.5 text-xs text-slate-900 placeholder:text-slate-400 focus-visible:outline-none focus-visible:border-slate-800 focus-visible:ring-1 focus-visible:ring-slate-800 transition-colors resize-none shadow-2xs"
             />
           </div>
 

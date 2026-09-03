@@ -5,9 +5,7 @@ import {
   Star, 
   ThumbsUp, 
   Camera, 
-  MessageSquare, 
   ChefHat, 
-  Sparkles,
   Plus,
   Utensils
 } from "lucide-react";
@@ -22,165 +20,188 @@ interface DishCardProps {
 
 export function DishCard({ dish, onSelect, onOpenReviewModal }: DishCardProps) {
   const stats = dish.statistics;
-  const primaryImg = dish.images && dish.images.length > 0 ? dish.images[0].url : null;
+  const validImages = (dish.images || []).filter(
+    (img) => img && typeof img.url === "string" && img.url.trim().startsWith("http")
+  );
+  const primaryImg =
+    validImages.length > 0
+      ? validImages[0].url
+      : "https://images.unsplash.com/photo-1612874742237-6526221588e3?auto=format&fit=crop&w=2560&q=90";
   const photoCount = stats?.customerPhotoCount || (dish.images ? dish.images.length : 0);
-  const recPct = stats?.recommendationPercentage || 95;
+  const recPct = stats?.recommendationPercentage || 100;
   const reviewCount = stats?.totalReviews || (dish.reviews ? dish.reviews.length : 0);
   const avgRating = stats?.averageRating ? stats.averageRating.toFixed(1) : "5.0";
 
-  // Pick top approved review for social preview
-  const topReview = dish.reviews?.find((r) => r.moderationStatus === "APPROVED");
+  // Sort reviews newest first to get the true latest review
+  const latestReview = dish.reviews
+    ? [...dish.reviews]
+        .filter((r) => r.moderationStatus === "APPROVED" || !r.moderationStatus)
+        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())[0]
+    : null;
 
   return (
     <div
       onClick={() => onSelect(dish)}
-      className={`group relative bg-white rounded-3xl border border-stone-200 shadow-sm hover:shadow-2xl hover:border-orange-400 transition-all duration-300 overflow-hidden flex flex-col cursor-pointer hover:-translate-y-1.5 ${
-        !dish.isAvailable ? "opacity-85" : ""
+      className={`group relative bg-white rounded-2xl border border-stone-200/90 shadow-[0_1px_3px_rgba(0,0,0,0.04)] hover:shadow-[0_12px_28px_-6px_rgba(0,0,0,0.08),0_4px_10px_-6px_rgba(0,0,0,0.04)] hover:border-amber-400/50 hover:-translate-y-1 active:translate-y-0 active:scale-[0.99] transition-all duration-300 ease-[cubic-bezier(0.2,0.8,0.2,1)] overflow-hidden flex flex-col cursor-pointer transform-gpu will-change-transform ${
+        !dish.isAvailable ? "opacity-75" : ""
       }`}
     >
-      {/* Visual Header */}
-      <div className="relative h-48 sm:h-52 w-full overflow-hidden bg-stone-100">
+      {/* Visual Header - Compact & Centered */}
+      <div className="relative h-40 sm:h-44 w-full overflow-hidden bg-stone-100 shrink-0">
         {primaryImg ? (
-          <img
-            src={primaryImg}
-            alt={dish.name}
-            className="w-full h-full object-cover group-hover:scale-108 transition-transform duration-700 ease-out"
-          />
+          <>
+            <img
+              src={primaryImg}
+              alt=""
+              className="absolute inset-0 w-full h-full object-cover blur-md scale-110 opacity-30 pointer-events-none"
+              aria-hidden="true"
+            />
+            <img
+              src={primaryImg}
+              alt={dish.name}
+              className="relative z-10 w-full h-full object-cover object-center group-hover:scale-[1.03] transition-transform duration-700 ease-[cubic-bezier(0.2,0.8,0.2,1)] will-change-transform"
+            />
+          </>
         ) : (
-          <div className="w-full h-full bg-gradient-to-br from-amber-50 via-orange-50 to-orange-100 flex flex-col items-center justify-center p-6 text-center relative">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-white shadow-md text-orange-600 mb-2 group-hover:scale-110 transition-transform">
-              <Utensils className="w-6 h-6" />
-            </div>
-            <span className="text-xs font-black text-stone-700 line-clamp-1 max-w-[200px]">
+          <div className="w-full h-full bg-stone-50 flex flex-col items-center justify-center p-4 text-center">
+            <Utensils className="w-6 h-6 text-stone-400 mb-1" />
+            <span className="text-[11px] font-semibold text-stone-600 line-clamp-1">
               {dish.name}
-            </span>
-            <span className="text-[10px] text-stone-400 font-bold mt-0.5">
-              Tap to view details & photos
             </span>
           </div>
         )}
-        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent pointer-events-none" />
 
-        {/* Top Badges */}
-        <div className="absolute top-3.5 left-3.5 right-3.5 flex items-center justify-between pointer-events-none z-10">
+        {/* Floating Badges Over Image */}
+        <div className="absolute top-2.5 left-2.5 right-2.5 flex items-center justify-between pointer-events-none z-20">
           <div className="flex items-center gap-1.5 flex-wrap">
             {!dish.isAvailable && (
-              <div className="bg-rose-600 text-white font-black text-[11px] px-3 py-1 rounded-full shadow-lg">
+              <div className="bg-rose-600 text-white font-semibold text-[10px] px-2 py-0.5 rounded shadow-xs">
                 <span>Sold Out</span>
               </div>
             )}
             {dish.isSignature && dish.isAvailable && (
-              <div className="bg-amber-500 text-stone-950 font-black text-[11px] px-3 py-1 rounded-full shadow-lg flex items-center gap-1.5">
-                <Star className="w-3.5 h-3.5 fill-stone-950 text-stone-950 shrink-0" />
+              <div className="bg-white/95 text-stone-900 font-semibold text-[10px] px-2 py-0.5 rounded shadow-xs flex items-center gap-1 backdrop-blur-xs">
+                <Star className="w-3 h-3 fill-amber-500 text-amber-500 shrink-0" />
                 <span>Signature</span>
               </div>
             )}
             {dish.isChefSpecial && dish.isAvailable && (
-              <div className="bg-rose-600 text-white font-black text-[11px] px-3 py-1 rounded-full shadow-lg flex items-center gap-1.5">
-                <ChefHat className="w-3.5 h-3.5 text-white shrink-0" />
+              <div className="bg-amber-600 text-white font-semibold text-[10px] px-2 py-0.5 rounded shadow-xs flex items-center gap-1">
+                <ChefHat className="w-3 h-3 text-white shrink-0" />
                 <span>Chef Pick</span>
               </div>
             )}
           </div>
 
-          {photoCount > 0 && (
-            <div className="flex items-center gap-1 bg-black/75 backdrop-blur-md text-white text-[11px] font-bold px-2.5 py-1 rounded-xl border border-white/20 shadow">
-              <Camera className="w-3.5 h-3.5 text-orange-400" />
+          {photoCount > 1 && (
+            <div className="flex items-center gap-1 bg-black/60 backdrop-blur-xs text-white text-[10px] font-medium px-2 py-0.5 rounded shadow-xs">
+              <Camera className="w-3 h-3 text-amber-300" />
               <span>{photoCount}</span>
             </div>
           )}
         </div>
 
-        {/* Bottom stats over image */}
-        <div className="absolute bottom-3 left-3.5 right-3.5 flex items-center justify-between pointer-events-none z-10">
-          <div className="flex items-center gap-1.5 bg-black/80 backdrop-blur-md px-2.5 py-1 rounded-xl text-white border border-white/15 shadow">
-            <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
-            <span className="text-xs font-black text-amber-300">{avgRating}</span>
-            <span className="text-[10px] text-stone-300 font-semibold">• {reviewCount} reviews</span>
-          </div>
-
-          <div className="flex items-center gap-1 bg-emerald-600 backdrop-blur-md text-white px-2.5 py-1 rounded-xl text-xs font-black shadow-md">
-            <ThumbsUp className="w-3 h-3" />
-            <span>{recPct}% rec</span>
+        {/* Rating Pill in Bottom Left of Photo */}
+        <div className="absolute bottom-2 left-2 z-20 pointer-events-none">
+          <div className="flex items-center gap-1 bg-white/95 backdrop-blur-xs px-2 py-0.5 rounded shadow-xs text-stone-900 border border-stone-200/80">
+            <Star className="w-3 h-3 fill-amber-500 text-amber-500" />
+            <span className="text-[11px] font-bold">{avgRating}</span>
+            <span className="text-[10px] text-stone-400 font-normal">({reviewCount})</span>
           </div>
         </div>
       </div>
 
-      {/* Dish Content Body */}
-      <div className="p-4 sm:p-5 flex flex-col flex-1 justify-between gap-3 bg-white">
-        <div className="space-y-2.5">
-          {/* Title & Price in clean layout */}
-          <div className="flex items-start justify-between gap-3">
-            <h3 className="text-base sm:text-lg font-black text-stone-900 group-hover:text-orange-600 transition-colors leading-tight line-clamp-2">
+      {/* Dish Content Body - Compact & Professional */}
+      <div className="p-3.5 flex flex-col flex-1 justify-between gap-2.5 bg-white">
+        <div className="space-y-1.5">
+          {/* Title & Price */}
+          <div className="flex items-start justify-between gap-2">
+            <h3 className="text-sm font-bold text-stone-900 group-hover:text-amber-700 transition-colors leading-snug line-clamp-1">
               {dish.name}
             </h3>
-            <div className="px-3 py-1 rounded-xl bg-orange-50 border border-orange-200 shrink-0">
-              <span className="text-sm font-black text-orange-600">
-                {formatPrice(dish.price, dish.currency)}
-              </span>
-            </div>
+            <span className="text-xs font-mono font-bold text-stone-900 bg-stone-100 px-2 py-0.5 rounded shrink-0">
+              {formatPrice(dish.price, dish.currency)}
+            </span>
           </div>
 
           {/* Description */}
           {dish.description && (
-            <p className="text-xs text-stone-600 line-clamp-2 leading-relaxed font-medium">
+            <p className="text-[11px] text-stone-500 line-clamp-2 leading-relaxed font-normal">
               {dish.description}
             </p>
           )}
 
-          {/* Dietary tags */}
-          <div className="flex flex-wrap gap-1.5 pt-1">
+          {/* Dietary Tags */}
+          <div className="flex flex-wrap items-center gap-1 pt-0.5">
             {dish.isVegetarian && (
-              <span className="bg-emerald-50 text-emerald-700 text-[10px] font-bold px-2 py-0.5 rounded-lg border border-emerald-200">
+              <span className="bg-emerald-50 text-emerald-700 text-[9px] font-semibold px-1.5 py-0.5 rounded border border-emerald-200/70">
                 Vegetarian
               </span>
             )}
             {dish.isGlutenFree && (
-              <span className="bg-amber-50 text-amber-700 text-[10px] font-bold px-2 py-0.5 rounded-lg border border-amber-200">
+              <span className="bg-amber-50 text-amber-800 text-[9px] font-semibold px-1.5 py-0.5 rounded border border-amber-200/70">
                 Gluten-Free
               </span>
             )}
             {dish.preparationTimeMinutes && (
-              <span className="bg-stone-50 text-stone-600 text-[10px] font-bold px-2 py-0.5 rounded-lg border border-stone-200">
-                {dish.preparationTimeMinutes} mins
+              <span className="bg-stone-50 text-stone-600 text-[9px] font-medium px-1.5 py-0.5 rounded border border-stone-200/60">
+                {dish.preparationTimeMinutes}m prep
+              </span>
+            )}
+            {recPct > 0 && (
+              <span className="text-[9px] text-stone-400 font-medium ml-auto">
+                {recPct}% loved
               </span>
             )}
           </div>
-        </div>
 
-        {/* Action and Social Snippet Footer */}
-        <div className="space-y-2.5 pt-2 border-t border-stone-100">
-          {topReview && (
-            <div className="bg-stone-50 rounded-2xl p-2.5 border border-stone-200/80 space-y-1">
-              <div className="flex items-center justify-between text-[11px]">
-                <span className="font-bold text-stone-800">{topReview.displayName}</span>
-                <span className="text-amber-600 font-black">★ {topReview.rating}.0</span>
+          {/* Latest Diner Review - Profile Name, Avatar & Review Quote */}
+          {latestReview && (
+            <div className="bg-stone-50/95 rounded-xl p-2.5 border border-stone-200/80 space-y-1 mt-1" suppressHydrationWarning>
+              <div className="flex items-center justify-between gap-2" suppressHydrationWarning>
+                <div className="flex items-center gap-1.5 min-w-0" suppressHydrationWarning>
+                  <div className="w-5 h-5 rounded-full overflow-hidden bg-stone-200 shrink-0 flex items-center justify-center text-[10px] font-bold text-stone-700" suppressHydrationWarning>
+                    {latestReview.avatarUrl ? (
+                      <img src={latestReview.avatarUrl} alt="" className="w-full h-full object-cover" />
+                    ) : (
+                      latestReview.displayName.charAt(0)
+                    )}
+                  </div>
+                  <span className="font-semibold text-xs text-stone-900 truncate" suppressHydrationWarning>
+                    {latestReview.displayName}
+                  </span>
+                </div>
+                <div className="flex items-center gap-0.5 text-amber-600 font-bold shrink-0 text-xs" suppressHydrationWarning>
+                  <Star className="w-3 h-3 fill-amber-500 text-amber-500" />
+                  <span>{latestReview.rating}.0</span>
+                </div>
               </div>
-              <p className="text-[11px] text-stone-600 line-clamp-1 italic font-medium">
-                "{topReview.reviewText}"
+              <p className="text-[11px] text-stone-600 line-clamp-1 italic font-normal leading-tight" suppressHydrationWarning>
+                &ldquo;{latestReview.reviewText}&rdquo;
               </p>
             </div>
           )}
+        </div>
 
-          <div className="flex items-center justify-between gap-2">
-            <span className="text-xs font-bold text-orange-600 group-hover:underline">
-              View Social Profile →
-            </span>
+        {/* Action Footer */}
+        <div className="flex items-center justify-between pt-1.5 border-t border-stone-100 text-xs">
+          <span className="text-[11px] font-semibold text-stone-600 group-hover:text-amber-800 transition-colors duration-200">
+            View Details →
+          </span>
 
-            {onOpenReviewModal && (
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onOpenReviewModal(dish);
-                }}
-                className="px-3 py-1.5 rounded-xl bg-stone-900 hover:bg-orange-600 text-white font-bold text-xs flex items-center gap-1 transition-all hover:scale-105 active:scale-95 shadow-xs"
-              >
-                <Plus className="w-3.5 h-3.5" />
-                <span>Review</span>
-              </button>
-            )}
-          </div>
+          {onOpenReviewModal && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.stopPropagation();
+                onOpenReviewModal(dish);
+              }}
+              className="px-2.5 py-1 rounded-lg bg-stone-900 hover:bg-amber-700 text-white font-medium text-[11px] flex items-center gap-1 transition-colors duration-200 cursor-pointer shadow-xs active:scale-95"
+            >
+              <Plus className="w-3 h-3" />
+              <span>Review</span>
+            </button>
+          )}
         </div>
       </div>
     </div>
