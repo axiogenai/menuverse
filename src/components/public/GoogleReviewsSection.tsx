@@ -6,12 +6,12 @@ import {
   CheckCircle2, 
   ExternalLink, 
   MessageSquarePlus, 
-  ShieldCheck,
   ChevronDown,
-  Quote
+  Sparkles,
+  Flame,
+  Clock
 } from "lucide-react";
 import { GoogleReview } from "@/types";
-import { Button } from "@/components/ui/button";
 
 interface GoogleReviewsSectionProps {
   reviews: GoogleReview[];
@@ -61,57 +61,91 @@ function ReviewAvatar({ name, photoUrl, index = 0 }: { name: string; photoUrl?: 
   );
 }
 
-const FRESH_TIMES = ["Just now", "Yesterday", "2 days ago", "4 days ago", "1 week ago"];
-
-function formatFreshDate(rel?: string | null, idx: number = 0): string {
-  if (!rel) return FRESH_TIMES[idx % FRESH_TIMES.length];
-  const l = rel.toLowerCase();
-  if (l.includes("month") || l.includes("year") || (l.includes("week") && (parseInt(l) || 0) > 2)) {
-    return FRESH_TIMES[idx % FRESH_TIMES.length];
-  }
-  return rel;
-}
-
+/**
+ * Strict chronological time score calculation
+ * Higher score = more recent review
+ */
 function getReviewTimeScore(r: GoogleReview): number {
+  // If user just submitted a review via app modal, prioritize it first
   if (r.isImported === false) {
-    return Date.now() + 10000000;
+    return Date.now() + 100000000;
   }
-  if (r.id === "g-rev-01") return Date.now() - 100000;
-  if (r.id === "g-rev-02") return Date.now() - 200000;
-  if (r.id === "g-rev-03") return Date.now() - 300000;
-  if (r.id === "g-rev-04") return Date.now() - 400000;
+
+  // Parse relative time string (from Google Maps or local input)
+  if (r.relativeTime) {
+    const rel = r.relativeTime.toLowerCase().trim();
+    if (rel.includes("just now") || rel.includes("second") || rel.includes("minute")) {
+      return Date.now();
+    }
+    if (rel.includes("hour")) {
+      const match = rel.match(/\d+/);
+      const h = match ? parseInt(match[0], 10) : 1;
+      return Date.now() - h * 3600000;
+    }
+    if (rel.includes("yesterday") || rel.includes("1 day")) {
+      return Date.now() - 86400000;
+    }
+    if (rel.includes("day")) {
+      const match = rel.match(/\d+/);
+      const d = match ? parseInt(match[0], 10) : 2;
+      return Date.now() - d * 86400000;
+    }
+    if (rel.includes("week")) {
+      const match = rel.match(/\d+/);
+      const w = match ? parseInt(match[0], 10) : 1;
+      return Date.now() - w * 7 * 86400000;
+    }
+    if (rel.includes("month")) {
+      const match = rel.match(/\d+/);
+      const m = match ? parseInt(match[0], 10) : 1;
+      return Date.now() - m * 30 * 86400000;
+    }
+    if (rel.includes("year")) {
+      const match = rel.match(/\d+/);
+      const y = match ? parseInt(match[0], 10) : 1;
+      return Date.now() - y * 365 * 86400000;
+    }
+  }
+
+  // Fallback to ISO published time if relativeTime is not descriptive
+  if (r.publishTime) {
+    const t = new Date(r.publishTime).getTime();
+    if (!isNaN(t) && t > 0) return t;
+  }
 
   if (r.createdAt) {
     const t = new Date(r.createdAt).getTime();
     if (!isNaN(t) && t > 0) return t;
   }
-  if (r.publishTime) {
-    const t = new Date(r.publishTime).getTime();
-    if (!isNaN(t) && t > 0) return t;
-  }
-  if (r.relativeTime) {
-    const rel = r.relativeTime.toLowerCase();
-    if (rel.includes("just now") || rel.includes("sec") || rel.includes("min")) return Date.now();
-    if (rel.includes("hour")) return Date.now() - 3600000;
-    if (rel.includes("yesterday") || rel.includes("1 day")) return Date.now() - 86400000;
-    if (rel.includes("day")) {
-      const d = parseInt(rel) || 2;
-      return Date.now() - d * 86400000;
-    }
-    if (rel.includes("week")) {
-      const w = parseInt(rel) || 1;
-      return Date.now() - w * 7 * 86400000;
-    }
-    if (rel.includes("month")) {
-      const m = parseInt(rel) || 1;
-      return Date.now() - m * 30 * 86400000 - 100000000;
-    }
-    if (rel.includes("year")) {
-      const y = parseInt(rel) || 1;
-      return Date.now() - y * 365 * 86400000 - 200000000;
-    }
-  }
+
   return 0;
+}
+
+/**
+ * Returns genuine, un-mutated relative time description
+ */
+function getDisplayRelativeTime(review: GoogleReview): string {
+  if (review.relativeTime && review.relativeTime.trim().length > 0) {
+    return review.relativeTime.trim();
+  }
+  if (review.publishTime) {
+    const diffMs = Date.now() - new Date(review.publishTime).getTime();
+    if (!isNaN(diffMs)) {
+      const diffMins = Math.floor(diffMs / 60000);
+      if (diffMins < 5) return "Just now";
+      if (diffMins < 60) return `${diffMins}m ago`;
+      const diffHours = Math.floor(diffMins / 60);
+      if (diffHours < 24) return `${diffHours}h ago`;
+      const diffDays = Math.floor(diffHours / 24);
+      if (diffDays === 1) return "Yesterday";
+      if (diffDays < 7) return `${diffDays} days ago`;
+      const diffWeeks = Math.floor(diffDays / 7);
+      if (diffWeeks < 5) return `${diffWeeks} week${diffWeeks > 1 ? "s" : ""} ago`;
+      const diffMonths = Math.floor(diffDays / 30);
+      return `${diffMonths} month${diffMonths > 1 ? "s" : ""} ago`;
+    }
+  }
+  return "Recent";
 }
 
 export function GoogleReviewsSection({
@@ -122,27 +156,28 @@ export function GoogleReviewsSection({
 }: GoogleReviewsSectionProps) {
   const [showAll, setShowAll] = useState(false);
 
-  // Deduplicate reviews to ensure zero duplicates
+  // 1. Deduplicate reviews by author + text key
   const uniqueReviews: GoogleReview[] = [];
   const seenKeys = new Set<string>();
   for (const r of reviews) {
-    const key = `${(r.authorName || "").trim().toLowerCase()}_${(r.text || "").trim().toLowerCase()}`;
+    const key = `${(r.authorName || "").trim().toLowerCase()}___${(r.text || "").trim().toLowerCase()}`;
     if (!seenKeys.has(key)) {
       seenKeys.add(key);
       uniqueReviews.push(r);
     }
   }
 
-  // Filter & sort latest newest reviews first
-  const sortedReviews = uniqueReviews
-    .sort((a, b) => getReviewTimeScore(b) - getReviewTimeScore(a));
+  // 2. STRICTLY sort reviews by time score descending (NEWEST / LATEST FIRST)
+  const sortedReviews = [...uniqueReviews].sort(
+    (a, b) => getReviewTimeScore(b) - getReviewTimeScore(a)
+  );
 
-  // Show only latest 4 reviews by default
+  // 3. Show ONLY latest 4 reviews by default (or all if expanded)
   const displayedReviews = showAll ? sortedReviews : sortedReviews.slice(0, 4);
 
   const avgRating = reviews.length > 0 
     ? (reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1)
-    : "4.9";
+    : "4.8";
 
   const totalReviews = reviews.length;
 
@@ -185,6 +220,10 @@ export function GoogleReviewsSection({
                 <h2 className="text-base sm:text-lg font-bold font-serif tracking-tight text-stone-900">
                   Google Customer Reviews
                 </h2>
+                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-100 text-amber-900 border border-amber-200">
+                  <Clock className="w-3 h-3 text-amber-700" />
+                  <span>Latest Reviews First</span>
+                </span>
               </div>
 
               {/* Star Score Summary */}
@@ -255,15 +294,30 @@ export function GoogleReviewsSection({
         </div>
       ) : (
         <div className="space-y-4">
+          {/* Top Row: Strictly the latest reviews */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
             {displayedReviews.map((review, idx) => {
               const reviewText = review.text && review.text.trim().length > 0 ? review.text.trim() : null;
+              const displayTime = getDisplayRelativeTime(review);
+              const isVeryLatest = idx === 0;
 
               return (
                 <div
-                  key={review.id}
-                  className="group bg-white rounded-2xl border border-stone-200/90 p-4 shadow-2xs hover:shadow-md hover:border-amber-400/50 transition-all duration-200 flex flex-col justify-between h-full min-h-[160px] gap-3"
+                  key={review.id || `review-${idx}`}
+                  className={`group bg-white rounded-2xl border p-4 shadow-2xs hover:shadow-md transition-all duration-200 flex flex-col justify-between h-full min-h-[160px] gap-3 relative ${
+                    isVeryLatest 
+                      ? "border-amber-400/80 bg-gradient-to-b from-amber-50/20 via-white to-white ring-2 ring-amber-400/20" 
+                      : "border-stone-200/90 hover:border-amber-400/50"
+                  }`}
                 >
+                  {/* Latest Badge on the #1 newest review */}
+                  {isVeryLatest && (
+                    <div className="absolute -top-2.5 right-3 bg-gradient-to-r from-amber-500 to-orange-500 text-stone-950 font-black text-[9px] px-2.5 py-0.5 rounded-full shadow-xs uppercase tracking-wider flex items-center gap-1 border border-amber-300">
+                      <Sparkles className="w-2.5 h-2.5" />
+                      <span>Latest Review</span>
+                    </div>
+                  )}
+
                   {/* Top: Author & Rating */}
                   <div className="space-y-2">
                     <div className="flex items-center gap-2.5">
@@ -278,8 +332,8 @@ export function GoogleReviewsSection({
                             {review.authorName || "Verified Guest"}
                           </span>
                         </div>
-                        <span className="text-[10px] text-stone-400 block mt-0.5">
-                          {formatFreshDate(review.relativeTime, idx)}
+                        <span className="text-[10px] text-stone-400 block mt-0.5 font-medium">
+                          {displayTime}
                         </span>
                       </div>
                     </div>
@@ -304,7 +358,7 @@ export function GoogleReviewsSection({
                     </div>
                   </div>
 
-                  {/* Middle: Review Text (Properly aligned with min height) */}
+                  {/* Middle: Review Text */}
                   <div className="flex-1 flex items-start py-0.5">
                     {reviewText ? (
                       <p className="text-xs text-stone-700 leading-relaxed font-normal italic line-clamp-3">
@@ -332,8 +386,8 @@ export function GoogleReviewsSection({
             })}
           </div>
 
-          {/* Show More / Show Less Button if more than 3 reviews */}
-          {sortedReviews.length > 3 && (
+          {/* Show More / Show Less Button if more than 4 reviews */}
+          {sortedReviews.length > 4 && (
             <div className="text-center pt-1">
               <button
                 type="button"
