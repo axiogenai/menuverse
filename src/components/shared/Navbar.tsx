@@ -17,7 +17,9 @@ import {
   Globe,
   Cpu,
   Users,
-  ChevronRight
+  ChevronRight,
+  Star,
+  Lock
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { menuVerseStore } from "@/lib/seed-data";
@@ -72,7 +74,7 @@ export function Navbar() {
   const isDashboard = pathname.startsWith("/dashboard");
   const venueSlug = restaurant?.slug || "hotel-gypsy";
 
-  // Navigation items without any QR Code or QR Studio
+  // Owner dashboard navigation (ONLY shown when inside /dashboard)
   const managementNav = [
     { name: "Overview Analytics", href: "/dashboard", icon: LayoutDashboard },
     { name: "Menu Management", href: "/dashboard/menu", icon: UtensilsCrossed },
@@ -154,7 +156,7 @@ export function Navbar() {
               </Link>
             )}
 
-            {/* Mobile Menu Toggle Button (Strictly md:hidden) */}
+            {/* Mobile Menu Toggle Button */}
             <button
               type="button"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -167,7 +169,7 @@ export function Navbar() {
         </div>
       </header>
 
-      {/* STRICTLY MOBILE ONLY Slide Drawer (md:hidden, anchored to right with dark backdrop) */}
+      {/* STRICTLY MOBILE ONLY Slide Drawer (md:hidden) */}
       {mounted && mobileMenuOpen && createPortal(
         <div className="fixed inset-0 z-[99999] md:hidden">
           {/* Dimmed Backdrop */}
@@ -176,7 +178,7 @@ export function Navbar() {
             onClick={() => setMobileMenuOpen(false)}
           />
 
-          {/* Side Drawer Panel (320px width, right-anchored) */}
+          {/* Side Drawer Panel */}
           <div className="fixed inset-y-0 right-0 w-80 max-w-[85vw] h-full bg-white shadow-2xl flex flex-col z-50 animate-in slide-in-from-right duration-250">
             {/* Top Bar with Brand & Close Button */}
             <div className="h-16 px-4 border-b border-slate-200 flex items-center justify-between shrink-0 bg-white shadow-2xs">
@@ -186,7 +188,9 @@ export function Navbar() {
                 </div>
                 <div className="flex flex-col text-left">
                   <span className="font-serif text-xs font-bold text-slate-900">Hotel Gypsy</span>
-                  <span className="text-[9px] font-semibold text-amber-700 uppercase tracking-wider -mt-0.5">Navigation</span>
+                  <span className="text-[9px] font-semibold text-amber-700 uppercase tracking-wider -mt-0.5">
+                    {isDashboard ? "Owner Portal" : "Dining Menu"}
+                  </span>
                 </div>
               </div>
 
@@ -202,94 +206,124 @@ export function Navbar() {
 
             {/* Scrollable Navigation Content */}
             <div className="flex-1 overflow-y-auto p-4 space-y-5 bg-slate-50/70">
-              {/* Guest Experience */}
-              <div className="space-y-1.5">
-                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-2">
-                  Guest Experience
-                </div>
-                <div className="bg-white rounded-2xl border border-slate-200/90 shadow-2xs divide-y divide-slate-100 overflow-hidden">
-                  <Link
-                    href={`/r/${venueSlug}`}
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="flex items-center justify-between p-3 hover:bg-slate-50 transition-colors"
-                  >
-                    <div className="flex items-center gap-2.5">
-                      <div className="w-8 h-8 rounded-lg bg-orange-50 text-orange-600 flex items-center justify-center shrink-0">
-                        <UtensilsCrossed className="w-4 h-4" />
-                      </div>
-                      <div className="text-left">
-                        <div className="text-xs font-bold text-slate-900">Live Menu</div>
-                        <div className="text-[10px] text-slate-500">Browse dishes & reviews</div>
-                      </div>
-                    </div>
-                    <ChevronRight className="w-4 h-4 text-slate-400 shrink-0" />
-                  </Link>
-
-                  <Link
-                    href={`/r/${venueSlug}/leaderboards`}
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="flex items-center justify-between p-3 hover:bg-slate-50 transition-colors"
-                  >
-                    <div className="flex items-center gap-2.5">
-                      <div className="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
-                        <Trophy className="w-4 h-4" />
-                      </div>
-                      <div className="text-left">
-                        <div className="text-xs font-bold text-slate-900">Dish Leaderboards</div>
-                        <div className="text-[10px] text-slate-500">Trending rankings</div>
-                      </div>
-                    </div>
-                    <ChevronRight className="w-4 h-4 text-slate-400 shrink-0" />
-                  </Link>
-                </div>
-              </div>
-
-              {/* Management Studio (No QR Code or QR Studio) */}
-              <div className="space-y-1.5">
-                <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-2">
-                  Management Studio
-                </div>
-                <div className="bg-white rounded-2xl border border-slate-200/90 shadow-2xs divide-y divide-slate-100 overflow-hidden">
-                  {managementNav.map((item) => {
-                    const Icon = item.icon;
-                    const isActive = pathname === item.href;
-                    return (
-                      <Link
-                        key={item.href}
-                        href={item.href}
-                        onClick={() => setMobileMenuOpen(false)}
-                        className={cn(
-                          "flex items-center justify-between p-3 transition-colors",
-                          isActive ? "bg-slate-900 text-white font-semibold" : "hover:bg-slate-50 text-slate-700"
-                        )}
-                      >
-                        <div className="flex items-center gap-2.5">
-                          <Icon className={cn("w-4 h-4 shrink-0", isActive ? "text-amber-400" : "text-slate-500")} />
-                          <span className="text-xs font-semibold">{item.name}</span>
+              {/* CASE 1: USER IS ON PUBLIC LIVE MENU -> SHOW ONLY DINER/GUEST NAVIGATION */}
+              {!isDashboard ? (
+                <div className="space-y-3">
+                  <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-2">
+                    Palace Dining
+                  </div>
+                  <div className="bg-white rounded-2xl border border-slate-200/90 shadow-2xs divide-y divide-slate-100 overflow-hidden">
+                    <Link
+                      href={`/r/${venueSlug}`}
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="flex items-center justify-between p-3.5 hover:bg-slate-50 transition-colors"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-lg bg-orange-50 text-orange-600 flex items-center justify-center shrink-0">
+                          <UtensilsCrossed className="w-4 h-4" />
                         </div>
-                        {isActive ? (
-                          <div className="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0" />
-                        ) : (
-                          <ChevronRight className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                        )}
-                      </Link>
-                    );
-                  })}
+                        <div className="text-left">
+                          <div className="text-xs font-bold text-slate-900">Live Menu</div>
+                          <div className="text-[10px] text-slate-500">Signature courses & dishes</div>
+                        </div>
+                      </div>
+                      <ChevronRight className="w-4 h-4 text-slate-400 shrink-0" />
+                    </Link>
+
+                    <Link
+                      href={`/r/${venueSlug}/leaderboards`}
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="flex items-center justify-between p-3.5 hover:bg-slate-50 transition-colors"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
+                          <Trophy className="w-4 h-4" />
+                        </div>
+                        <div className="text-left">
+                          <div className="text-xs font-bold text-slate-900">Dish Leaderboards</div>
+                          <div className="text-[10px] text-slate-500">Top-rated diner favorites</div>
+                        </div>
+                      </div>
+                      <ChevronRight className="w-4 h-4 text-slate-400 shrink-0" />
+                    </Link>
+
+                    <a
+                      href="#google-reviews"
+                      onClick={() => setMobileMenuOpen(false)}
+                      className="flex items-center justify-between p-3.5 hover:bg-slate-50 transition-colors"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center shrink-0">
+                          <Star className="w-4 h-4 fill-blue-500" />
+                        </div>
+                        <div className="text-left">
+                          <div className="text-xs font-bold text-slate-900">Google Customer Reviews</div>
+                          <div className="text-[10px] text-slate-500">Verified diner feedback</div>
+                        </div>
+                      </div>
+                      <ChevronRight className="w-4 h-4 text-slate-400 shrink-0" />
+                    </a>
+                  </div>
                 </div>
-              </div>
+              ) : (
+                /* CASE 2: USER IS INSIDE OWNER DASHBOARD -> SHOW MANAGEMENT NAVIGATION */
+                <div className="space-y-3">
+                  <div className="text-[10px] font-bold text-slate-400 uppercase tracking-wider px-2">
+                    Management Studio
+                  </div>
+                  <div className="bg-white rounded-2xl border border-slate-200/90 shadow-2xs divide-y divide-slate-100 overflow-hidden">
+                    {managementNav.map((item) => {
+                      const Icon = item.icon;
+                      const isActive = pathname === item.href;
+                      return (
+                        <Link
+                          key={item.href}
+                          href={item.href}
+                          onClick={() => setMobileMenuOpen(false)}
+                          className={cn(
+                            "flex items-center justify-between p-3 transition-colors",
+                            isActive ? "bg-slate-900 text-white font-semibold" : "hover:bg-slate-50 text-slate-700"
+                          )}
+                        >
+                          <div className="flex items-center gap-2.5">
+                            <Icon className={cn("w-4 h-4 shrink-0", isActive ? "text-amber-400" : "text-slate-500")} />
+                            <span className="text-xs font-semibold">{item.name}</span>
+                          </div>
+                          {isActive ? (
+                            <div className="w-1.5 h-1.5 rounded-full bg-amber-400 shrink-0" />
+                          ) : (
+                            <ChevronRight className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                          )}
+                        </Link>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
             </div>
 
-            {/* Bottom Action Bar */}
+            {/* Bottom Context Action */}
             <div className="p-3.5 border-t border-slate-200 bg-white shrink-0">
-              <Link
-                href={`/r/${venueSlug}`}
-                target="_blank"
-                onClick={() => setMobileMenuOpen(false)}
-                className="w-full py-2.5 px-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm transition-all active:scale-95"
-              >
-                <span>View Public Menu</span>
-                <ExternalLink className="w-3.5 h-3.5 text-amber-400" />
-              </Link>
+              {isDashboard ? (
+                <Link
+                  href={`/r/${venueSlug}`}
+                  target="_blank"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="w-full py-2.5 px-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm transition-all active:scale-95"
+                >
+                  <span>View Public Menu</span>
+                  <ExternalLink className="w-3.5 h-3.5 text-amber-400" />
+                </Link>
+              ) : (
+                <Link
+                  href="/dashboard"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="w-full py-2.5 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold flex items-center justify-center gap-1.5 transition-all"
+                >
+                  <Lock className="w-3.5 h-3.5 text-slate-500" />
+                  <span>Restaurant Owner Login</span>
+                </Link>
+              )}
             </div>
           </div>
         </div>,
