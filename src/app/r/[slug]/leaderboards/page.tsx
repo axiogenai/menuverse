@@ -29,7 +29,7 @@ import { Input } from "@/components/ui/input";
 
 export default function RestaurantLeaderboardsPage() {
   const params = useParams();
-  const slug = (params?.slug as string) || "gusto-trattoria";
+  const slug = (params?.slug as string) || "hotel-gypsy";
 
   const [mounted, setMounted] = useState(false);
   const [restaurant, setRestaurant] = useState<Restaurant | null>(null);
@@ -42,7 +42,7 @@ export default function RestaurantLeaderboardsPage() {
 
   useEffect(() => {
     const update = () => {
-      const rest = menuVerseStore.getRestaurantBySlug(slug) || menuVerseStore.getRestaurantBySlug("gusto-trattoria");
+      const rest = menuVerseStore.getRestaurantBySlug(slug) || menuVerseStore.getRestaurantBySlug("hotel-gypsy");
       if (rest) {
         setRestaurant({ ...rest });
         if (selectedDish) {
@@ -313,7 +313,7 @@ export default function RestaurantLeaderboardsPage() {
         isOpen={isReviewOpen}
         onClose={() => setIsReviewOpen(false)}
         onReviewSubmitted={(newRev) => {
-          const rest = menuVerseStore.getRestaurantBySlug(slug) || menuVerseStore.getRestaurantBySlug("gusto-trattoria");
+          const rest = menuVerseStore.getRestaurantBySlug(slug) || menuVerseStore.getRestaurantBySlug("hotel-gypsy");
           if (rest) {
             setRestaurant({ ...rest });
             const updatedDish = rest.menuItems?.find((d) => d.id === newRev.menuItemId);

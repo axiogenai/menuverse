@@ -20,6 +20,12 @@ export function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
+  // Automatically migrate legacy /r/gusto-trattoria links to /r/hotel-gypsy
+  if (pathname.startsWith("/r/gusto-trattoria")) {
+    const newPath = pathname.replace("/r/gusto-trattoria", "/r/hotel-gypsy");
+    return NextResponse.redirect(new URL(newPath, request.url));
+  }
+
   const isOwnerDomain =
     hostname === "owner-gypsy.vercel.app" ||
     hostname.startsWith("owner-") ||

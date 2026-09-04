@@ -22,7 +22,7 @@ export default function AdminModerationPage() {
   const [filter, setFilter] = useState<"ALL" | "FLAGGED" | "APPROVED">("ALL");
 
   useEffect(() => {
-    const rest = menuVerseStore.getRestaurantBySlug("gusto-trattoria");
+    const rest = menuVerseStore.getRestaurantBySlug("hotel-gypsy");
     if (rest && rest.reviews) {
       setReviews(rest.reviews);
     }
@@ -30,7 +30,7 @@ export default function AdminModerationPage() {
 
   const handleModerate = (reviewId: string, status: "APPROVED" | "FLAGGED" | "REJECTED") => {
     menuVerseStore.updateReviewModeration(reviewId, status);
-    const rest = menuVerseStore.getRestaurantBySlug("gusto-trattoria");
+    const rest = menuVerseStore.getRestaurantBySlug("hotel-gypsy");
     if (rest && rest.reviews) setReviews(rest.reviews);
   };
 

@@ -230,7 +230,7 @@ export default function StaffManagementPage() {
                 <Input
                   value={newName}
                   onChange={(e) => setNewName(e.target.value)}
-                  placeholder="e.g. Matteo Ferrari"
+                  placeholder="e.g. Rahul Patil"
                   required
                   className="bg-white border-slate-200 text-xs h-8.5"
                 />
@@ -242,7 +242,7 @@ export default function StaffManagementPage() {
                   type="email"
                   value={newEmail}
                   onChange={(e) => setNewEmail(e.target.value)}
-                  placeholder="e.g. matteo@gustotrattoria.example.com"
+                  placeholder="e.g. rahul@hotelgypsy.com"
                   required
                   className="bg-white border-slate-200 text-xs h-8.5"
                 />

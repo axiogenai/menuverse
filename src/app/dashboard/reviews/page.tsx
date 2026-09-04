@@ -42,7 +42,7 @@ export default function ReviewsManagementPage() {
 
   const handleSendReply = (reviewId: string, replyText: string) => {
     menuVerseStore.replyToReview(reviewId, replyText);
-    const updated = menuVerseStore.getRestaurantBySlug("gusto-trattoria");
+    const updated = menuVerseStore.getRestaurantBySlug("hotel-gypsy");
     if (updated) setRestaurant(updated);
   };
 

@@ -24,7 +24,7 @@ import { WriteReviewModal } from "@/components/public/WriteReviewModal";
 
 export default function StandaloneDishSocialPage() {
   const params = useParams();
-  const slug = (params?.slug as string) || "gusto-trattoria";
+  const slug = (params?.slug as string) || "hotel-gypsy";
   const dishId = (params?.dishId as string) || "dish-01";
 
   const [dish, setDish] = useState<MenuItem | null>(

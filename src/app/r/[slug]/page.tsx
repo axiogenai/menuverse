@@ -46,11 +46,11 @@ const SORT_OPTIONS: { id: SortOption; label: string; icon: React.ElementType }[]
 
 export default function RestaurantPublicMenuPage() {
   const params = useParams();
-  const slug = (params?.slug as string) || "gusto-trattoria";
+  const slug = (params?.slug as string) || "hotel-gypsy";
 
   // Instant hydration default state
   const [restaurant, setRestaurant] = useState<Restaurant | null>(
-    () => menuVerseStore.getRestaurantBySlug(slug) || menuVerseStore.getRestaurantBySlug("gusto-trattoria") || null
+    () => menuVerseStore.getRestaurantBySlug(slug) || menuVerseStore.getRestaurantBySlug("hotel-gypsy") || null
   );
   const [mounted, setMounted] = useState(false);
   const [activeCategory, setActiveCategory] = useState<string>("all");
@@ -87,7 +87,7 @@ export default function RestaurantPublicMenuPage() {
 
   useEffect(() => {
     const update = () => {
-      const rest = menuVerseStore.getRestaurantBySlug(slug) || menuVerseStore.getRestaurantBySlug("gusto-trattoria");
+      const rest = menuVerseStore.getRestaurantBySlug(slug) || menuVerseStore.getRestaurantBySlug("hotel-gypsy");
       if (rest) setRestaurant({ ...rest });
     };
     update();
