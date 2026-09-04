@@ -57,17 +57,10 @@ export default function RestaurantLeaderboardsPage() {
     return () => unsubscribe();
   }, [slug, selectedDish?.id]);
 
-  // Show loading on server (SSR) and before client hydration — prevents all mismatches
-  if (!mounted || !restaurant) {
-    return (
-      <div className="min-h-screen flex items-center justify-center p-4 bg-[#faf8f5]">
-        <p className="text-stone-500 font-medium">Loading leaderboards...</p>
-      </div>
-    );
-  }
+  const currentRest = restaurant || menuVerseStore.getRestaurantBySlug(slug) || menuVerseStore.getRestaurants()[0];
+  if (!currentRest) return null;
 
-
-  const dishes = restaurant.menuItems || [];
+  const dishes = currentRest.menuItems || [];
   const rawLeaderboardItems: LeaderboardDish[] = generateLeaderboard(dishes, activeTab, 50);
 
   const filteredItems = rawLeaderboardItems.filter((item) => {
@@ -101,7 +94,7 @@ export default function RestaurantLeaderboardsPage() {
             <span>Back to Menu</span>
           </Link>
           <span className="text-xs font-serif font-bold text-stone-800 tracking-wide">
-            {restaurant.name}
+            {currentRest.name}
           </span>
         </div>
       </header>

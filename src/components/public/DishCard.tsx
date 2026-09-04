@@ -53,12 +53,16 @@ export function DishCard({ dish, onSelect, onOpenReviewModal }: DishCardProps) {
             <img
               src={primaryImg}
               alt=""
+              loading="lazy"
+              decoding="async"
               className="absolute inset-0 w-full h-full object-cover blur-md scale-110 opacity-30 pointer-events-none"
               aria-hidden="true"
             />
             <img
               src={primaryImg}
               alt={dish.name}
+              loading="lazy"
+              decoding="async"
               className="relative z-10 w-full h-full object-cover object-center group-hover:scale-[1.03] transition-transform duration-700 ease-[cubic-bezier(0.2,0.8,0.2,1)] will-change-transform"
             />
           </>

@@ -95,18 +95,10 @@ export default function RestaurantPublicMenuPage() {
     return () => unsubscribe();
   }, [slug]);
 
-  if (!mounted || !restaurant) {
-    return (
-      <div className="min-h-screen flex items-center justify-center p-4 bg-[#faf8f5]">
-        <div className="text-center space-y-3">
-          <div className="h-10 w-10 mx-auto border-3 border-orange-500 border-t-transparent rounded-full animate-spin" />
-          <p className="text-xs font-bold text-stone-500">Loading social menu...</p>
-        </div>
-      </div>
-    );
-  }
+  const currentRest = restaurant || menuVerseStore.getRestaurantBySlug(slug) || menuVerseStore.getRestaurants()[0];
+  if (!currentRest) return null;
 
-  const allDishes = restaurant.menuItems || [];
+  const allDishes = currentRest.menuItems || [];
 
   // Filter dishes
   const filteredDishes = allDishes
@@ -158,7 +150,7 @@ export default function RestaurantPublicMenuPage() {
       <div className="container mx-auto max-w-5xl px-3 sm:px-4 pt-4 space-y-6">
         {/* Restaurant Header Hero */}
         <RestaurantHero
-          restaurant={restaurant}
+          restaurant={currentRest}
           onOpenQRModal={() => setIsQRModalOpen(true)}
         />
 
@@ -328,7 +320,7 @@ export default function RestaurantPublicMenuPage() {
 
         {/* Sticky Category Course Navigation */}
         <CategoryNav
-          categories={restaurant.categories || []}
+          categories={currentRest.categories || []}
           activeCategoryId={activeCategory}
           onSelectCategory={setActiveCategory}
         />
@@ -400,9 +392,9 @@ export default function RestaurantPublicMenuPage() {
 
         {/* Google Customer Reviews Showcase Section */}
         <GoogleReviewsSection
-          reviews={restaurant.googleReviews || []}
-          restaurantName={restaurant.name}
-          googlePlaceId={restaurant.googlePlaceId}
+          reviews={currentRest.googleReviews || []}
+          restaurantName={currentRest.name}
+          googlePlaceId={currentRest.googlePlaceId}
           onOpenWriteGoogleReview={() => setIsWriteGoogleReviewOpen(true)}
         />
 
@@ -434,8 +426,8 @@ export default function RestaurantPublicMenuPage() {
       )}
 
       <WriteGoogleReviewModal
-        restaurantId={restaurant.id}
-        restaurantName={restaurant.name}
+        restaurantId={currentRest.id}
+        restaurantName={currentRest.name}
         isOpen={isWriteGoogleReviewOpen}
         onClose={() => setIsWriteGoogleReviewOpen(false)}
         onReviewSubmitted={() => {
@@ -445,7 +437,7 @@ export default function RestaurantPublicMenuPage() {
       />
 
       <QRModal
-        restaurant={restaurant}
+        restaurant={currentRest}
         isOpen={isQRModalOpen}
         onClose={() => setIsQRModalOpen(false)}
       />
