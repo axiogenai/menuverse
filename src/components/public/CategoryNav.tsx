@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
-import { Category } from "@/types";
+import { Category, MenuItem } from "@/types";
 import { cn } from "@/lib/utils";
 import { 
   UtensilsCrossed, 
@@ -19,6 +19,7 @@ import {
 
 interface CategoryNavProps {
   categories: Category[];
+  dishes?: MenuItem[];
   activeCategoryId: string;
   onSelectCategory: (categoryId: string) => void;
 }
@@ -34,6 +35,7 @@ const ICON_MAP: Record<string, React.ElementType> = {
 
 export function CategoryNav({
   categories,
+  dishes,
   activeCategoryId,
   onSelectCategory,
 }: CategoryNavProps) {
@@ -96,7 +98,9 @@ export function CategoryNav({
     }
   };
 
-  const totalDishes = categories.reduce((sum, c) => sum + (c.menuItems?.length || 0), 0);
+  const totalDishes = dishes
+    ? dishes.length
+    : categories.reduce((sum, c) => sum + (c.menuItems?.length || 0), 0);
 
   return (
     <div className="sticky top-16 z-30 -mx-3 sm:-mx-4 px-3 sm:px-4 py-2 bg-[#faf8f5]/95 backdrop-blur-md border-b border-stone-200/80 shadow-2xs">
@@ -151,7 +155,9 @@ export function CategoryNav({
             {categories.map((category) => {
               const Icon = ICON_MAP[category.icon || "Utensils"] || Utensils;
               const isActive = activeCategoryId === category.id;
-              const count = category.menuItems?.length;
+              const count = dishes
+                ? dishes.filter((d) => d.categoryId === category.id).length
+                : (category.menuItems?.length ?? 0);
 
               return (
                 <button
@@ -167,7 +173,7 @@ export function CategoryNav({
                 >
                   <Icon className={cn("w-3.5 h-3.5 shrink-0", isActive ? "text-amber-400" : "text-stone-500")} />
                   <span>{category.name}</span>
-                  {count !== undefined && count > 0 && (
+                  {count > 0 && (
                     <span
                       className={cn(
                         "text-[10px] sm:text-[11px] px-1.5 py-0.5 rounded-full font-bold leading-none",
@@ -253,6 +259,9 @@ export function CategoryNav({
                 {categories.map((cat) => {
                   const Icon = ICON_MAP[cat.icon || "Utensils"] || Utensils;
                   const isActive = activeCategoryId === cat.id;
+                  const count = dishes
+                    ? dishes.filter((d) => d.categoryId === cat.id).length
+                    : (cat.menuItems?.length ?? 0);
 
                   return (
                     <button
@@ -271,7 +280,7 @@ export function CategoryNav({
                       </div>
                       <div className="flex items-center gap-1.5">
                         <span className="text-[11px] text-stone-400 font-normal">
-                          ({cat.menuItems?.length || 0})
+                          ({count})
                         </span>
                         {isActive && <Check className="w-3.5 h-3.5 text-amber-700" />}
                       </div>

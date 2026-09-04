@@ -815,9 +815,9 @@ class MenuVerseStore {
     if (typeof window === "undefined") return;
     try {
       const dataVersion = localStorage.getItem("menuverse_data_version");
-      if (dataVersion !== "v7-authentic-indian-dishes") {
+      if (dataVersion !== "v8-kolhapuri-counts-fast") {
         this.resetAllData();
-        localStorage.setItem("menuverse_data_version", "v7-authentic-indian-dishes");
+        localStorage.setItem("menuverse_data_version", "v8-kolhapuri-counts-fast");
         return;
       }
 
@@ -834,8 +834,8 @@ class MenuVerseStore {
             r.name = "Hotel Gypsy";
             r.address = "Peth Vadgaon, Kolhapur";
             r.cuisineType = "5-Star Luxury Palace & Fine Dining";
-            r.coverUrl = "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=3840&q=95";
-            r.logoUrl = "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=800&q=85";
+            r.coverUrl = "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1200&q=80";
+            r.logoUrl = "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=400&q=80";
             return r;
           });
         }
@@ -952,10 +952,6 @@ class MenuVerseStore {
     }
     if (!restaurant) return undefined;
 
-    const restCategories = this.categories
-      .filter((c) => c.restaurantId === restaurant.id || !c.restaurantId || c.restaurantId === "rest-01")
-      .sort((a, b) => a.displayOrder - b.displayOrder);
-
     const restDishes = this.dishes
       .filter((d) => d.restaurantId === restaurant.id || !d.restaurantId || d.restaurantId === "rest-01")
       .map((dish) => {
@@ -969,6 +965,14 @@ class MenuVerseStore {
           reviews: dishReviews,
         };
       });
+
+    const restCategories = this.categories
+      .filter((c) => c.restaurantId === restaurant.id || !c.restaurantId || c.restaurantId === "rest-01")
+      .sort((a, b) => a.displayOrder - b.displayOrder)
+      .map((cat) => ({
+        ...cat,
+        menuItems: restDishes.filter((d) => d.categoryId === cat.id),
+      }));
 
     const rawGoogleReviews = this.googleReviews.filter(
       (g) => g.restaurantId === restaurant.id || !g.restaurantId || g.restaurantId === "rest-01" || restaurant.id === "rest-02"

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useParams } from "next/navigation";
 import { 
   Search, 
@@ -100,40 +100,43 @@ export default function RestaurantPublicMenuPage() {
 
   const allDishes = currentRest.menuItems || [];
 
-  // Filter dishes
-  const filteredDishes = allDishes
-    .filter((dish) => {
-      const matchesCategory =
-        activeCategory === "all" || dish.categoryId === activeCategory;
-      const matchesSearch =
-        dish.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (dish.description && dish.description.toLowerCase().includes(searchQuery.toLowerCase())) ||
-        dish.ingredients.some((ing) => ing.toLowerCase().includes(searchQuery.toLowerCase()));
-      
-      let matchesDiet = true;
-      if (selectedDiet === "VEG") matchesDiet = dish.isVegetarian;
-      if (selectedDiet === "GF") matchesDiet = dish.isGlutenFree;
-      if (selectedDiet === "SIGNATURE") matchesDiet = dish.isSignature;
-      if (selectedDiet === "CHEF") matchesDiet = dish.isChefSpecial;
+  // Filter & sort dishes (memoized for instant responsiveness)
+  const filteredDishes = useMemo(() => {
+    return allDishes
+      .filter((dish) => {
+        const matchesCategory =
+          activeCategory === "all" || dish.categoryId === activeCategory;
+        const matchesSearch =
+          !searchQuery.trim() ||
+          dish.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          (dish.description && dish.description.toLowerCase().includes(searchQuery.toLowerCase())) ||
+          dish.ingredients.some((ing) => ing.toLowerCase().includes(searchQuery.toLowerCase()));
+        
+        let matchesDiet = true;
+        if (selectedDiet === "VEG") matchesDiet = dish.isVegetarian;
+        if (selectedDiet === "GF") matchesDiet = dish.isGlutenFree;
+        if (selectedDiet === "SIGNATURE") matchesDiet = dish.isSignature;
+        if (selectedDiet === "CHEF") matchesDiet = dish.isChefSpecial;
 
-      return matchesCategory && matchesSearch && matchesDiet;
-    })
-    .sort((a, b) => {
-      if (sortBy === "RATING") {
-        return (b.statistics?.averageRating || 0) - (a.statistics?.averageRating || 0);
-      }
-      if (sortBy === "REVIEWS") {
-        return (b.statistics?.totalReviews || b.reviews?.length || 0) - (a.statistics?.totalReviews || a.reviews?.length || 0);
-      }
-      if (sortBy === "PRICE_ASC") {
-        return a.price - b.price;
-      }
-      if (sortBy === "PRICE_DESC") {
-        return b.price - a.price;
-      }
-      // POPULARITY (Bayesian weighted score)
-      return (b.statistics?.popularityScore || 0) - (a.statistics?.popularityScore || 0);
-    });
+        return matchesCategory && matchesSearch && matchesDiet;
+      })
+      .sort((a, b) => {
+        if (sortBy === "RATING") {
+          return (b.statistics?.averageRating || 0) - (a.statistics?.averageRating || 0);
+        }
+        if (sortBy === "REVIEWS") {
+          return (b.statistics?.totalReviews || b.reviews?.length || 0) - (a.statistics?.totalReviews || a.reviews?.length || 0);
+        }
+        if (sortBy === "PRICE_ASC") {
+          return a.price - b.price;
+        }
+        if (sortBy === "PRICE_DESC") {
+          return b.price - a.price;
+        }
+        // POPULARITY (Bayesian weighted score)
+        return (b.statistics?.popularityScore || 0) - (a.statistics?.popularityScore || 0);
+      });
+  }, [allDishes, activeCategory, searchQuery, selectedDiet, sortBy]);
 
   const handleOpenDish = (dish: MenuItem) => {
     setSelectedDish(dish);
@@ -321,6 +324,7 @@ export default function RestaurantPublicMenuPage() {
         {/* Sticky Category Course Navigation */}
         <CategoryNav
           categories={currentRest.categories || []}
+          dishes={allDishes}
           activeCategoryId={activeCategory}
           onSelectCategory={setActiveCategory}
         />

@@ -158,7 +158,7 @@ export function DashboardSidebar() {
       <div className="p-3 border-t border-slate-200 bg-slate-50/50">
         <Link
           href={`/r/${venueSlug}`}
-          target="_blank"
+          prefetch={true}
           className="flex items-center justify-center gap-1.5 w-full py-2 px-3 rounded-lg bg-orange-600 hover:bg-orange-500 text-white text-xs font-semibold shadow-xs transition-all active:scale-95 cursor-pointer"
         >
           <span>View Public Menu</span>

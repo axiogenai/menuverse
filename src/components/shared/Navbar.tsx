@@ -308,7 +308,7 @@ export function Navbar() {
               <div className="p-3.5 border-t border-slate-200 bg-white shrink-0">
                 <Link
                   href={`/r/${venueSlug}`}
-                  target="_blank"
+                  prefetch={true}
                   onClick={() => setMobileMenuOpen(false)}
                   className="w-full py-2.5 px-3 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-bold flex items-center justify-center gap-1.5 shadow-sm transition-all active:scale-95"
                 >

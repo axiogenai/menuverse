@@ -21,8 +21,8 @@ interface RestaurantHeroProps {
   onOpenQRModal?: () => void;
 }
 
-const DEFAULT_4K_HOTEL_COVER = "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=3840&q=95";
-const DEFAULT_LOGO = "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=800&q=85";
+const DEFAULT_4K_HOTEL_COVER = "https://images.unsplash.com/photo-1566073771259-6a8506099945?auto=format&fit=crop&w=1200&q=80";
+const DEFAULT_LOGO = "https://images.unsplash.com/photo-1542314831-068cd1dbfeeb?auto=format&fit=crop&w=400&q=80";
 
 export function RestaurantHero({ restaurant, onOpenQRModal }: RestaurantHeroProps) {
   const [copied, setCopied] = useState(false);
