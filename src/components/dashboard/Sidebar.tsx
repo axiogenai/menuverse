@@ -97,7 +97,7 @@ export function DashboardSidebar() {
   const venueName = restaurant?.name || "My Restaurant";
 
   return (
-    <aside className="hidden md:flex w-60 shrink-0 bg-white text-slate-800 border-r border-slate-200 flex-col justify-between sticky top-16 h-[calc(100vh-4rem)]">
+    <aside className="hidden md:flex w-60 shrink-0 bg-white text-slate-800 border-r border-slate-200 flex-col justify-between h-full">
       {/* Scrollable Nav Area */}
       <div className="p-3 space-y-4 overflow-y-auto flex-1">
         {/* Workspace Selector */}
