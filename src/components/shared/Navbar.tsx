@@ -18,8 +18,7 @@ import {
   Cpu,
   Users,
   ChevronRight,
-  Star,
-  Lock
+  Star
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { menuVerseStore } from "@/lib/seed-data";
@@ -31,8 +30,20 @@ export function Navbar() {
   const [mounted, setMounted] = useState(false);
   const [restaurant, setRestaurant] = useState<Restaurant | null>(null);
 
+  const [isOwnerHost, setIsOwnerHost] = useState(false);
+
   useEffect(() => {
     setMounted(true);
+    if (typeof window !== "undefined") {
+      const h = window.location.hostname.toLowerCase();
+      setIsOwnerHost(
+        h === "owner-gypsy.vercel.app" ||
+        h.startsWith("owner-") ||
+        h.startsWith("owner.") ||
+        h.startsWith("admin.") ||
+        pathname.startsWith("/dashboard")
+      );
+    }
     const update = () => {
       const rest = menuVerseStore.getRestaurantBySlug();
       if (rest) setRestaurant({ ...rest });
@@ -40,7 +51,7 @@ export function Navbar() {
     update();
     const unsub = menuVerseStore.subscribe(update);
     return () => unsub();
-  }, []);
+  }, [pathname]);
 
   // Close mobile menu on route change
   useEffect(() => {
@@ -130,23 +141,25 @@ export function Navbar() {
               <Trophy className="w-3.5 h-3.5 text-amber-500" />
               <span>Dish Leaderboards</span>
             </Link>
-            <Link
-              href="/dashboard"
-              className={cn(
-                "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors",
-                isDashboard
-                  ? "bg-white text-slate-900 shadow-xs font-semibold"
-                  : "text-slate-600 hover:text-slate-900 hover:bg-white/60"
-              )}
-            >
-              <LayoutDashboard className="w-3.5 h-3.5 text-orange-600" />
-              <span>Owner Dashboard</span>
-            </Link>
+            {isOwnerHost && (
+              <Link
+                href="/dashboard"
+                className={cn(
+                  "flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors",
+                  isDashboard
+                    ? "bg-white text-slate-900 shadow-xs font-semibold"
+                    : "text-slate-600 hover:text-slate-900 hover:bg-white/60"
+                )}
+              >
+                <LayoutDashboard className="w-3.5 h-3.5 text-orange-600" />
+                <span>Owner Dashboard</span>
+              </Link>
+            )}
           </nav>
 
           {/* Right Actions & Mobile Hamburger */}
           <div className="flex items-center gap-2">
-            {!isDashboard && (
+            {isOwnerHost && !isDashboard && (
               <Link
                 href="/dashboard"
                 className="hidden sm:flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-slate-900 hover:bg-slate-800 text-white text-xs font-semibold shadow-xs transition-all active:scale-95"
@@ -180,24 +193,12 @@ export function Navbar() {
 
           {/* Side Drawer Panel */}
           <div className="fixed inset-y-0 right-0 w-80 max-w-[85vw] h-full bg-white shadow-2xl flex flex-col z-50 animate-in slide-in-from-right duration-250">
-            {/* Top Bar with Brand & Close Button */}
-            <div className="h-16 px-4 border-b border-slate-200 flex items-center justify-between shrink-0 bg-white shadow-2xs">
-              <div className="flex items-center gap-2.5">
-                <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-stone-950 text-amber-400 border border-amber-500/40 shadow-xs">
-                  <Crown className="w-4 h-4" />
-                </div>
-                <div className="flex flex-col text-left">
-                  <span className="font-serif text-xs font-bold text-slate-900">Hotel Gypsy</span>
-                  <span className="text-[9px] font-semibold text-amber-700 uppercase tracking-wider -mt-0.5">
-                    {isDashboard ? "Owner Portal" : "Dining Menu"}
-                  </span>
-                </div>
-              </div>
-
+            {/* Minimal Drawer Top Bar: Clean Close Button Only (No Duplicate Navbar, No Crown, No Restaurant Name) */}
+            <div className="h-14 px-4 flex items-center justify-end shrink-0 bg-white border-b border-slate-100">
               <button
                 type="button"
                 onClick={() => setMobileMenuOpen(false)}
-                className="p-1.5 rounded-lg text-slate-600 hover:text-slate-900 hover:bg-slate-100 transition-colors border border-slate-200 cursor-pointer"
+                className="p-2 rounded-xl text-slate-500 hover:text-slate-900 hover:bg-slate-100 transition-colors border border-slate-200 cursor-pointer"
                 aria-label="Close navigation"
               >
                 <X className="w-5 h-5" />
@@ -302,9 +303,9 @@ export function Navbar() {
               )}
             </div>
 
-            {/* Bottom Context Action */}
-            <div className="p-3.5 border-t border-slate-200 bg-white shrink-0">
-              {isDashboard ? (
+            {/* Bottom Context Action - Only for Dashboard Owner */}
+            {isDashboard && (
+              <div className="p-3.5 border-t border-slate-200 bg-white shrink-0">
                 <Link
                   href={`/r/${venueSlug}`}
                   target="_blank"
@@ -314,17 +315,8 @@ export function Navbar() {
                   <span>View Public Menu</span>
                   <ExternalLink className="w-3.5 h-3.5 text-amber-400" />
                 </Link>
-              ) : (
-                <Link
-                  href="/dashboard"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="w-full py-2.5 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-semibold flex items-center justify-center gap-1.5 transition-all"
-                >
-                  <Lock className="w-3.5 h-3.5 text-slate-500" />
-                  <span>Restaurant Owner Login</span>
-                </Link>
-              )}
-            </div>
+              </div>
+            )}
           </div>
         </div>,
         document.body

@@ -39,16 +39,41 @@ export function DishEditModal({
   const [ingredientsStr, setIngredientsStr] = useState("");
   const [allergensStr, setAllergensStr] = useState("");
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const [isUploading, setIsUploading] = useState(false);
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        if (typeof reader.result === "string") {
-          setImageUrl(reader.result);
+      setIsUploading(true);
+      try {
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("folder", "dishes");
+
+        const res = await fetch("/api/upload", {
+          method: "POST",
+          body: formData,
+        });
+
+        const data = await res.json();
+        if (data.success && data.url) {
+          setImageUrl(data.url);
+        } else {
+          const reader = new FileReader();
+          reader.onload = () => {
+            if (typeof reader.result === "string") setImageUrl(reader.result);
+          };
+          reader.readAsDataURL(file);
         }
-      };
-      reader.readAsDataURL(file);
+      } catch (err) {
+        const reader = new FileReader();
+        reader.onload = () => {
+          if (typeof reader.result === "string") setImageUrl(reader.result);
+        };
+        reader.readAsDataURL(file);
+      } finally {
+        setIsUploading(false);
+      }
     }
   };
 

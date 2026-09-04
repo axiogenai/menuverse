@@ -71,9 +71,16 @@ export function CategoryNav({
     return () => document.removeEventListener("mousedown", handleOutsideClick);
   }, [isGridOpen]);
 
-  const handleClick = (id: string) => {
+  const handleClick = (id: string, e?: React.MouseEvent) => {
     onSelectCategory(id);
     setIsGridOpen(false);
+    if (e?.currentTarget) {
+      (e.currentTarget as HTMLElement).scrollIntoView({
+        behavior: "smooth",
+        inline: "center",
+        block: "nearest",
+      });
+    }
     const elem = document.getElementById("menu-categories");
     if (elem) {
       const top = elem.getBoundingClientRect().top + window.pageYOffset - 80;
@@ -107,30 +114,31 @@ export function CategoryNav({
             </button>
           )}
 
-          {/* Scrollable Luxury Ribbon Track */}
+          {/* Scrollable Ribbon Track */}
           <div
             ref={scrollContainerRef}
             onScroll={checkScroll}
-            className="flex items-center gap-1.5 overflow-x-auto py-1 pr-4 scroll-smooth scrollbar-none [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden w-full"
+            className="flex items-center gap-2 overflow-x-auto py-1 scroll-smooth hide-scrollbar scrollbar-none [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden w-full select-none"
           >
             {/* All Dishes Master Pill */}
             <button
-              onClick={() => handleClick("all")}
+              type="button"
+              onClick={(e) => handleClick("all", e)}
               className={cn(
-                "flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold shrink-0 transition-all duration-200 active:scale-95 cursor-pointer shadow-2xs",
+                "flex items-center gap-1.5 h-9 sm:h-10 px-3.5 sm:px-4 rounded-full text-xs sm:text-sm font-bold whitespace-nowrap shrink-0 transition-all active:scale-95 cursor-pointer",
                 activeCategoryId === "all"
-                  ? "bg-stone-900 text-white border border-stone-900 shadow-xs"
-                  : "bg-white text-stone-700 border border-stone-200/90 hover:border-amber-400/60 hover:bg-amber-50/40"
+                  ? "bg-stone-900 text-white shadow-sm border border-stone-900"
+                  : "bg-white text-stone-700 border border-stone-200/90 hover:border-amber-400/60 hover:bg-stone-50"
               )}
             >
-              <Utensils className={cn("w-3.5 h-3.5", activeCategoryId === "all" ? "text-amber-400" : "text-stone-500")} />
-              <span>All Dishes</span>
+              <Utensils className={cn("w-3.5 h-3.5 shrink-0", activeCategoryId === "all" ? "text-amber-400" : "text-stone-500")} />
+              <span>All Menu</span>
               {totalDishes > 0 && (
                 <span
                   className={cn(
-                    "text-[10px] px-1.5 py-0.2 rounded-md font-semibold",
+                    "text-[10px] sm:text-[11px] px-1.5 py-0.5 rounded-full font-bold leading-none",
                     activeCategoryId === "all"
-                      ? "bg-white/20 text-white"
+                      ? "bg-white/25 text-white"
                       : "bg-stone-100 text-stone-600 border border-stone-200/60"
                   )}
                 >
@@ -148,22 +156,23 @@ export function CategoryNav({
               return (
                 <button
                   key={category.id}
-                  onClick={() => handleClick(category.id)}
+                  type="button"
+                  onClick={(e) => handleClick(category.id, e)}
                   className={cn(
-                    "flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold shrink-0 transition-all duration-200 active:scale-95 cursor-pointer shadow-2xs",
+                    "flex items-center gap-1.5 h-9 sm:h-10 px-3.5 sm:px-4 rounded-full text-xs sm:text-sm font-bold whitespace-nowrap shrink-0 transition-all active:scale-95 cursor-pointer",
                     isActive
-                      ? "bg-stone-900 text-white border border-stone-900 shadow-xs"
-                      : "bg-white text-stone-700 border border-stone-200/90 hover:border-amber-400/60 hover:bg-amber-50/40"
+                      ? "bg-stone-900 text-white shadow-sm border border-stone-900"
+                      : "bg-white text-stone-700 border border-stone-200/90 hover:border-amber-400/60 hover:bg-stone-50"
                   )}
                 >
-                  <Icon className={cn("w-3.5 h-3.5", isActive ? "text-amber-400" : "text-stone-500")} />
+                  <Icon className={cn("w-3.5 h-3.5 shrink-0", isActive ? "text-amber-400" : "text-stone-500")} />
                   <span>{category.name}</span>
                   {count !== undefined && count > 0 && (
                     <span
                       className={cn(
-                        "text-[10px] px-1.5 py-0.2 rounded-md font-semibold",
+                        "text-[10px] sm:text-[11px] px-1.5 py-0.5 rounded-full font-bold leading-none",
                         isActive
-                          ? "bg-white/20 text-white"
+                          ? "bg-white/25 text-white"
                           : "bg-stone-100 text-stone-600 border border-stone-200/60"
                       )}
                     >
@@ -187,21 +196,21 @@ export function CategoryNav({
           )}
         </div>
 
-        {/* Right: Stationary Separator & "Directory" Quick Drawer */}
-        <div className="relative shrink-0 pl-2 border-l border-stone-200/80" ref={dropdownRef}>
+        {/* Right: Quick Menu Index Drawer Button */}
+        <div className="relative shrink-0 ml-1" ref={dropdownRef}>
           <button
             type="button"
             onClick={() => setIsGridOpen(!isGridOpen)}
             className={cn(
-              "flex items-center gap-1.5 h-8 px-2.5 rounded-xl border text-xs font-bold transition-all shadow-2xs active:scale-95 cursor-pointer",
+              "flex items-center gap-1.5 h-9 sm:h-10 px-3 rounded-full border text-xs font-bold transition-all shadow-2xs active:scale-95 cursor-pointer shrink-0 select-none",
               isGridOpen
                 ? "bg-amber-800 text-white border-amber-800 shadow-xs"
                 : "bg-white text-stone-700 border-stone-200/90 hover:bg-stone-50 hover:border-amber-400/60"
             )}
             title="Browse All Categories Directory"
           >
-            <LayoutGrid className={cn("w-3.5 h-3.5", isGridOpen ? "text-white" : "text-amber-700")} />
-            <span className="hidden sm:inline">Directory</span>
+            <LayoutGrid className={cn("w-3.5 h-3.5 shrink-0", isGridOpen ? "text-white" : "text-amber-700")} />
+            <span className="hidden sm:inline">Index</span>
           </button>
 
           {/* Luxury Dropdown Menu Directory Panel */}

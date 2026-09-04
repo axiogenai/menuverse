@@ -169,24 +169,25 @@ export default function RestaurantPublicMenuPage() {
         />
 
         {/* Search & Dietary Filters Container */}
-        <div className="bg-white rounded-3xl border border-stone-200/90 shadow-sm p-4 space-y-3" id="menu-categories">
-          {/* Search Input & Sort Selector */}
-          <div className="flex flex-col sm:flex-row sm:items-center gap-2">
-            <div className="relative flex-1">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400" />
+        <div className="bg-white rounded-2xl sm:rounded-3xl border border-stone-200/90 shadow-sm p-3 sm:p-4 space-y-2.5 sm:space-y-3" id="menu-categories">
+          {/* Search Input & Sort Selector (Side-by-side on all screens) */}
+          <div className="flex items-center gap-2">
+            <div className="relative flex-1 min-w-0">
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-stone-400 pointer-events-none" />
               <Input
                 type="text"
-                placeholder="Search dishes, fresh ingredients, flavors..."
+                placeholder="Search dishes..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-11 pr-10 h-11 rounded-2xl bg-stone-50/80 border-stone-200 text-stone-900 placeholder:text-stone-400 focus-visible:ring-orange-500 text-xs sm:text-sm font-medium"
+                className="pl-10 pr-9 h-11 rounded-xl sm:rounded-2xl bg-stone-50/80 border-stone-200 text-stone-900 placeholder:text-stone-400 focus-visible:ring-amber-500 text-sm font-medium w-full"
               />
               {searchQuery && (
                 <button
+                  type="button"
                   onClick={() => setSearchQuery("")}
-                  className="absolute right-3.5 top-1/2 -translate-y-1/2 p-1 text-stone-400 hover:text-stone-700 rounded-full hover:bg-stone-200/60"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-stone-400 hover:text-stone-700 rounded-full hover:bg-stone-200/60 transition-colors"
                 >
-                  <X className="w-4 h-4" />
+                  <X className="w-3.5 h-3.5" />
                 </button>
               )}
             </div>
@@ -197,28 +198,29 @@ export default function RestaurantPublicMenuPage() {
                 type="button"
                 onClick={() => setIsSortOpen(!isSortOpen)}
                 className={cn(
-                  "flex items-center gap-2 h-11 px-3.5 rounded-2xl border text-xs font-bold transition-all shadow-2xs cursor-pointer active:scale-95",
+                  "flex items-center gap-1.5 sm:gap-2 h-11 px-3 sm:px-3.5 rounded-xl sm:rounded-2xl border text-xs font-bold transition-all shadow-2xs cursor-pointer active:scale-95 shrink-0 select-none",
                   isSortOpen
                     ? "bg-stone-900 text-white border-stone-900 shadow-xs"
                     : "bg-stone-50/90 text-stone-800 border-stone-200 hover:bg-white hover:border-amber-400/60"
                 )}
+                title="Sort Menu"
               >
                 {(() => {
                   const curr = SORT_OPTIONS.find((s) => s.id === sortBy) || SORT_OPTIONS[0];
                   const Icon = curr.icon;
                   return (
                     <>
-                      <Icon className={cn("w-3.5 h-3.5", isSortOpen ? "text-amber-400" : "text-amber-700")} />
-                      <span>{curr.label}</span>
+                      <Icon className={cn("w-4 h-4 shrink-0", isSortOpen ? "text-amber-400" : "text-amber-600")} />
+                      <span className="hidden sm:inline whitespace-nowrap">{curr.label}</span>
                     </>
                   );
                 })()}
-                <ChevronDown className={cn("w-3.5 h-3.5 transition-transform duration-200", isSortOpen ? "rotate-180 text-white" : "text-stone-400")} />
+                <ChevronDown className={cn("w-3.5 h-3.5 shrink-0 transition-transform duration-200", isSortOpen ? "rotate-180 text-white" : "text-stone-400")} />
               </button>
 
               {/* Luxury Popover Panel */}
               {isSortOpen && (
-                <div className="absolute right-0 top-12 w-56 bg-white rounded-2xl border border-stone-200/90 shadow-2xl p-1.5 z-40 animate-in fade-in zoom-in-95 duration-150">
+                <div className="absolute right-0 top-12 w-52 sm:w-56 bg-white rounded-2xl border border-stone-200/90 shadow-2xl p-1.5 z-40 animate-in fade-in zoom-in-95 duration-150">
                   <div className="text-[10px] uppercase font-bold text-stone-400 px-2.5 py-1.5 tracking-wider border-b border-stone-100 mb-1">
                     Sort Dishes By
                   </div>
@@ -255,63 +257,70 @@ export default function RestaurantPublicMenuPage() {
             </div>
           </div>
 
-          {/* Quick Dietary Filters */}
-          <div className="flex items-center gap-2 overflow-x-auto hide-scrollbar text-xs">
-            <span className="text-[11px] font-bold text-stone-400 shrink-0 uppercase tracking-wider pl-1">
-              Filter:
-            </span>
+          {/* Quick Dietary Filter Chips (Smooth horizontal swipe) */}
+          <div className="flex items-center gap-1.5 sm:gap-2 overflow-x-auto hide-scrollbar scroll-smooth -mx-1 px-1 py-0.5 select-none">
             <button
+              type="button"
               onClick={() => setSelectedDiet("ALL")}
-              className={`px-3.5 py-1.5 rounded-xl font-bold transition-all ${
+              className={cn(
+                "h-8 sm:h-9 px-3.5 rounded-full text-xs font-bold whitespace-nowrap shrink-0 transition-all cursor-pointer active:scale-95",
                 selectedDiet === "ALL"
                   ? "bg-stone-900 text-white shadow-xs"
-                  : "bg-stone-100/80 text-stone-600 hover:bg-stone-200/70"
-              }`}
+                  : "bg-stone-100/90 text-stone-600 hover:bg-stone-200/70 border border-stone-200/50"
+              )}
             >
-              All Types
+              All Dishes
             </button>
             <button
+              type="button"
               onClick={() => setSelectedDiet(selectedDiet === "SIGNATURE" ? "ALL" : "SIGNATURE")}
-              className={`flex items-center gap-1 px-3.5 py-1.5 rounded-xl font-bold transition-all ${
+              className={cn(
+                "h-8 sm:h-9 px-3 sm:px-3.5 rounded-full text-xs font-bold whitespace-nowrap shrink-0 flex items-center gap-1.5 transition-all cursor-pointer active:scale-95",
                 selectedDiet === "SIGNATURE"
                   ? "bg-amber-500 text-stone-950 shadow-xs"
-                  : "bg-stone-100/80 text-stone-600 hover:bg-stone-200/70"
-              }`}
+                  : "bg-stone-100/90 text-stone-600 hover:bg-stone-200/70 border border-stone-200/50"
+              )}
             >
-              <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-500" />
+              <Star className="w-3.5 h-3.5 fill-amber-400 text-amber-500 shrink-0" />
               <span>Signatures</span>
             </button>
             <button
+              type="button"
               onClick={() => setSelectedDiet(selectedDiet === "CHEF" ? "ALL" : "CHEF")}
-              className={`flex items-center gap-1 px-3.5 py-1.5 rounded-xl font-bold transition-all ${
+              className={cn(
+                "h-8 sm:h-9 px-3 sm:px-3.5 rounded-full text-xs font-bold whitespace-nowrap shrink-0 flex items-center gap-1.5 transition-all cursor-pointer active:scale-95",
                 selectedDiet === "CHEF"
                   ? "bg-rose-600 text-white shadow-xs"
-                  : "bg-stone-100/80 text-stone-600 hover:bg-stone-200/70"
-              }`}
+                  : "bg-stone-100/90 text-stone-600 hover:bg-stone-200/70 border border-stone-200/50"
+              )}
             >
-              <ChefHat className="w-3.5 h-3.5" />
+              <ChefHat className="w-3.5 h-3.5 shrink-0" />
               <span>Chef Picks</span>
             </button>
             <button
+              type="button"
               onClick={() => setSelectedDiet(selectedDiet === "VEG" ? "ALL" : "VEG")}
-              className={`flex items-center gap-1 px-3.5 py-1.5 rounded-xl font-bold transition-all ${
+              className={cn(
+                "h-8 sm:h-9 px-3 sm:px-3.5 rounded-full text-xs font-bold whitespace-nowrap shrink-0 flex items-center gap-1.5 transition-all cursor-pointer active:scale-95",
                 selectedDiet === "VEG"
                   ? "bg-emerald-600 text-white shadow-xs"
-                  : "bg-stone-100/80 text-stone-600 hover:bg-stone-200/70"
-              }`}
+                  : "bg-stone-100/90 text-stone-600 hover:bg-stone-200/70 border border-stone-200/50"
+              )}
             >
-              <Leaf className="w-3.5 h-3.5 text-emerald-500" />
-              <span>Vegetarian</span>
+              <Leaf className="w-3.5 h-3.5 text-emerald-500 shrink-0" />
+              <span>Pure Veg</span>
             </button>
             <button
+              type="button"
               onClick={() => setSelectedDiet(selectedDiet === "GF" ? "ALL" : "GF")}
-              className={`flex items-center gap-1 px-3.5 py-1.5 rounded-xl font-bold transition-all ${
+              className={cn(
+                "h-8 sm:h-9 px-3 sm:px-3.5 rounded-full text-xs font-bold whitespace-nowrap shrink-0 flex items-center gap-1.5 transition-all cursor-pointer active:scale-95",
                 selectedDiet === "GF"
                   ? "bg-amber-600 text-white shadow-xs"
-                  : "bg-stone-100/80 text-stone-600 hover:bg-stone-200/70"
-              }`}
+                  : "bg-stone-100/90 text-stone-600 hover:bg-stone-200/70 border border-stone-200/50"
+              )}
             >
-              <Wheat className="w-3.5 h-3.5 text-amber-500" />
+              <Wheat className="w-3.5 h-3.5 text-amber-500 shrink-0" />
               <span>Gluten-Free</span>
             </button>
           </div>

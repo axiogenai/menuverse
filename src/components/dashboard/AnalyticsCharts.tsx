@@ -17,6 +17,7 @@ import { AnalyticsSummary } from "@/types";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Star, Eye, MessageSquare, ThumbsUp, Cpu, TrendingUp, ArrowUpRight } from "lucide-react";
 import { formatPrice } from "@/lib/utils";
+import { menuVerseStore } from "@/lib/seed-data";
 import Link from "next/link";
 
 interface AnalyticsChartsProps {
@@ -301,55 +302,49 @@ export function AnalyticsCharts({ data }: AnalyticsChartsProps) {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5 pt-3.5">
-          <div className="p-3.5 rounded-lg border border-slate-200/90 bg-white space-y-2 shadow-2xs hover:border-slate-300 transition-colors">
-            <div className="flex items-center justify-between gap-2">
-              <div className="flex items-center gap-2 min-w-0">
-                <div className="w-7 h-7 rounded-full bg-slate-100 border border-slate-200 text-slate-700 text-xs font-semibold flex items-center justify-center shrink-0">
-                  SM
-                </div>
-                <div className="min-w-0">
-                  <span className="text-xs font-semibold text-slate-900 truncate block">Sophia Martinez</span>
-                  <span className="text-[11px] text-slate-400 truncate block">Truffle Tagliolini</span>
-                </div>
-              </div>
-              <div className="flex items-center gap-1 text-xs font-semibold text-slate-900 font-mono shrink-0">
-                <Star className="w-3 h-3 fill-amber-500 text-amber-500" />
-                <span>5.0</span>
-              </div>
-            </div>
-            <p className="text-xs text-slate-700 leading-relaxed font-normal">
-              "The truffle tagliolini was phenomenal! Fresh al dente pasta and exceptional flavor profile."
-            </p>
-            <div className="flex items-center justify-between pt-1 text-[11px] text-slate-400 border-t border-slate-100">
-              <span className="font-medium text-slate-500">Verified Diner</span>
-              <span>2 hours ago</span>
-            </div>
-          </div>
+          {(() => {
+            const gReviews = menuVerseStore.getRestaurantBySlug()?.googleReviews || [];
+            const withText = gReviews.filter((r) => r.text && r.text.trim().length > 0);
+            const displayList = withText.length > 0 ? withText.slice(0, 2) : gReviews.slice(0, 2);
 
-          <div className="p-3.5 rounded-lg border border-slate-200/90 bg-white space-y-2 shadow-2xs hover:border-slate-300 transition-colors">
-            <div className="flex items-center justify-between gap-2">
-              <div className="flex items-center gap-2 min-w-0">
-                <div className="w-7 h-7 rounded-full bg-slate-100 border border-slate-200 text-slate-700 text-xs font-semibold flex items-center justify-center shrink-0">
-                  LC
+            return displayList.map((r, i) => (
+              <div
+                key={r.id || i}
+                className="p-3.5 rounded-lg border border-slate-200/90 bg-white space-y-2 shadow-2xs hover:border-slate-300 transition-colors flex flex-col justify-between"
+              >
+                <div className="flex items-center justify-between gap-2">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <div className="w-7 h-7 rounded-full bg-slate-100 border border-slate-200 text-slate-700 text-xs font-semibold flex items-center justify-center shrink-0 overflow-hidden">
+                      {r.authorPhotoUrl ? (
+                        <img src={r.authorPhotoUrl} alt={r.authorName} className="w-full h-full object-cover" />
+                      ) : (
+                        <span>{(r.authorName || "G").trim().charAt(0).toUpperCase()}</span>
+                      )}
+                    </div>
+                    <div className="min-w-0">
+                      <span className="text-xs font-semibold text-slate-900 truncate block">
+                        {r.authorName || "Verified Diner"}
+                      </span>
+                      <span className="text-[11px] text-slate-400 truncate block">
+                        Verified Google Diner
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-1 text-xs font-semibold text-slate-900 font-mono shrink-0">
+                    <Star className="w-3 h-3 fill-amber-500 text-amber-500" />
+                    <span>{r.rating}.0</span>
+                  </div>
                 </div>
-                <div className="min-w-0">
-                  <span className="text-xs font-semibold text-slate-900 truncate block">Liam Chen</span>
-                  <span className="text-[11px] text-slate-400 truncate block">Burrata Pugliese</span>
+                <p className="text-xs text-slate-700 leading-relaxed font-normal italic line-clamp-3">
+                  &ldquo;{r.text || `Verified ${r.rating}.0 star dining experience on Google Maps.`}&rdquo;
+                </p>
+                <div className="flex items-center justify-between pt-1 text-[11px] text-slate-400 border-t border-slate-100 mt-auto">
+                  <span className="font-medium text-emerald-600">Verified on Google Maps</span>
+                  <span>{r.relativeTime || "Recent"}</span>
                 </div>
               </div>
-              <div className="flex items-center gap-1 text-xs font-semibold text-slate-900 font-mono shrink-0">
-                <Star className="w-3 h-3 fill-amber-500 text-amber-500" />
-                <span>5.0</span>
-              </div>
-            </div>
-            <p className="text-xs text-slate-700 leading-relaxed font-normal">
-              "Incredible creaminess in the burrata. The heirloom tomatoes were sweet and aged balsamic was top notch."
-            </p>
-            <div className="flex items-center justify-between pt-1 text-[11px] text-slate-400 border-t border-slate-100">
-              <span className="font-medium text-slate-500">Verified Diner</span>
-              <span>5 hours ago</span>
-            </div>
-          </div>
+            ));
+          })()}
         </div>
       </Card>
     </div>

@@ -53,24 +53,51 @@ export function WriteReviewModal({
   // Real-time sentiment preview
   const sentimentPreview = reviewText.length > 5 ? analyzeReviewSentiment(reviewText, rating) : null;
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (file.size > 5 * 1024 * 1024) {
-        setErrorMsg("Image size exceeds 5MB limit.");
+      if (file.size > 10 * 1024 * 1024) {
+        setErrorMsg("Image size exceeds 10MB limit.");
         return;
       }
-      const reader = new FileReader();
-      reader.onload = () => {
-        if (typeof reader.result === "string") {
-          setPhotoUrl(reader.result);
+      setIsUploadingPhoto(true);
+      setErrorMsg(null);
+
+      try {
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("folder", "reviews");
+
+        const res = await fetch("/api/upload", {
+          method: "POST",
+          body: formData,
+        });
+
+        const data = await res.json();
+        if (data.success && data.url) {
+          setPhotoUrl(data.url);
+        } else {
+          const reader = new FileReader();
+          reader.onload = () => {
+            if (typeof reader.result === "string") setPhotoUrl(reader.result);
+          };
+          reader.readAsDataURL(file);
         }
-      };
-      reader.readAsDataURL(file);
+      } catch (err) {
+        const reader = new FileReader();
+        reader.onload = () => {
+          if (typeof reader.result === "string") setPhotoUrl(reader.result);
+        };
+        reader.readAsDataURL(file);
+      } finally {
+        setIsUploadingPhoto(false);
+      }
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!displayName.trim()) {
       setErrorMsg("Please enter your diner name or nickname.");
@@ -105,6 +132,27 @@ export function WriteReviewModal({
           },
         ]
       : [];
+
+    // 1. Sync review to Supabase Database
+    try {
+      await fetch("/api/reviews", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          menuItemId: dish.id,
+          restaurantId: dish.restaurantId || "rest-01",
+          displayName: displayName.trim(),
+          rating,
+          reviewText: reviewText.trim(),
+          tasteRating,
+          portionRating,
+          valueRating,
+          images: photoUrl.trim() ? [{ url: photoUrl.trim() }] : [],
+        }),
+      });
+    } catch (apiErr) {
+      console.warn("Background Supabase sync error:", apiErr);
+    }
 
     const newRev = menuVerseStore.addReview({
       menuItemId: dish.id,
