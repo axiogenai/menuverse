@@ -20,8 +20,13 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
 export default function GoogleReviewsSyncPage() {
-  const [restaurant, setRestaurant] = useState<Restaurant | null>(null);
-  const [placeIdInput, setPlaceIdInput] = useState("");
+  const [restaurant, setRestaurant] = useState<Restaurant | null>(
+    () => menuVerseStore.getRestaurantBySlug() || null
+  );
+  const [placeIdInput, setPlaceIdInput] = useState<string>(() => {
+    const r = menuVerseStore.getRestaurantBySlug();
+    return r?.googlePlaceId || "ChIJtVgY1N0FwTsRsYX6iv3bUsU";
+  });
   const [apiKeyInput, setApiKeyInput] = useState("");
   const [limitInput, setLimitInput] = useState("30");
   const [sortInput, setSortInput] = useState("newest");

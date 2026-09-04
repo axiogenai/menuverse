@@ -8,15 +8,18 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 
 export default function RestaurantSettingsPage() {
-  const [restaurant, setRestaurant] = useState<Restaurant | null>(null);
-  const [name, setName] = useState("");
-  const [address, setAddress] = useState("");
-  const [phone, setPhone] = useState("");
-  const [website, setWebsite] = useState("");
-  const [cuisineType, setCuisineType] = useState("");
-  const [description, setDescription] = useState("");
-  const [coverUrl, setCoverUrl] = useState("");
-  const [logoUrl, setLogoUrl] = useState("");
+  const [restaurant, setRestaurant] = useState<Restaurant | null>(
+    () => menuVerseStore.getRestaurantBySlug() || null
+  );
+  const initialRest = menuVerseStore.getRestaurantBySlug();
+  const [name, setName] = useState(() => initialRest?.name || "");
+  const [address, setAddress] = useState(() => initialRest?.address || "");
+  const [phone, setPhone] = useState(() => initialRest?.phone || "");
+  const [website, setWebsite] = useState(() => initialRest?.website || "");
+  const [cuisineType, setCuisineType] = useState(() => initialRest?.cuisineType || "");
+  const [description, setDescription] = useState(() => initialRest?.description || "");
+  const [coverUrl, setCoverUrl] = useState(() => initialRest?.coverUrl || "");
+  const [logoUrl, setLogoUrl] = useState(() => initialRest?.logoUrl || "");
   const [isSaved, setIsSaved] = useState(false);
 
   useEffect(() => {

@@ -132,8 +132,9 @@ export function DashboardSidebar() {
                     <Link
                       key={item.href}
                       href={item.href}
+                      prefetch={true}
                       className={cn(
-                        "flex items-center gap-2.5 px-2.5 py-1.5 rounded-md text-xs font-medium transition-colors",
+                        "flex items-center gap-2.5 px-2.5 py-1.5 rounded-md text-xs font-medium transition-colors cursor-pointer",
                         item.active
                           ? "bg-slate-100 text-slate-950 font-semibold"
                           : "text-slate-600 hover:text-slate-950 hover:bg-slate-50"
@@ -159,6 +160,7 @@ export function DashboardSidebar() {
       <div className="shrink-0 p-3 border-t border-slate-200 bg-slate-50/50">
         <Link
           href={`/r/${venueSlug}`}
+          prefetch={true}
           className="flex items-center justify-center gap-1.5 w-full py-2 px-3 rounded-lg bg-orange-600 hover:bg-orange-500 text-white text-xs font-semibold shadow-xs transition-all active:scale-95 cursor-pointer"
         >
           <span>View Public Menu</span>

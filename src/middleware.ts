@@ -46,18 +46,11 @@ export function middleware(request: NextRequest) {
   }
 
   // ---------------------------------------------------------------------------
-  // 2. PUBLIC DINER DOMAIN (e.g. menuverse.vercel.app, hotelgypsy.com, etc.)
+  // 2. PUBLIC DINER DOMAIN (e.g. hotelgypsy.vercel.app, menuverse.in, etc.)
   // ---------------------------------------------------------------------------
-  if (!isLocalhost) {
-    // Completely block /dashboard and /admin from public diner domain
-    if (pathname.startsWith("/dashboard") || pathname.startsWith("/admin")) {
-      return NextResponse.redirect(new URL("/r/hotel-gypsy", request.url));
-    }
-
-    // Root URL on diner domain goes straight to the Live Menu
-    if (pathname === "/") {
-      return NextResponse.redirect(new URL("/r/hotel-gypsy", request.url));
-    }
+  // Root URL on diner domain goes straight to the Live Menu
+  if (pathname === "/") {
+    return NextResponse.redirect(new URL("/r/hotel-gypsy", request.url));
   }
 
   // ---------------------------------------------------------------------------

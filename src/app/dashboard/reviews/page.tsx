@@ -18,7 +18,9 @@ import { Button } from "@/components/ui/button";
 import { ReviewReplyModal } from "@/components/dashboard/ReviewReplyModal";
 
 export default function ReviewsManagementPage() {
-  const [restaurant, setRestaurant] = useState<Restaurant | null>(null);
+  const [restaurant, setRestaurant] = useState<Restaurant | null>(
+    () => menuVerseStore.getRestaurantBySlug("hotel-gypsy") || menuVerseStore.getRestaurants()[0] || null
+  );
   const [filter, setFilter] = useState<"ALL" | "UNREPLIED" | "POSITIVE" | "NEGATIVE">("ALL");
   const [replyingReview, setReplyingReview] = useState<Review | null>(null);
 

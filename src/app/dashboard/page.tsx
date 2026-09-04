@@ -14,12 +14,17 @@ import {
 import { StatCard } from "@/components/dashboard/StatCard";
 import { AnalyticsCharts } from "@/components/dashboard/AnalyticsCharts";
 import { menuVerseStore } from "@/lib/seed-data";
-import { AnalyticsSummary } from "@/types";
+import { AnalyticsSummary, Restaurant } from "@/types";
 import { Button } from "@/components/ui/button";
 
 export default function DashboardOverviewPage() {
-  const [restaurant, setRestaurant] = useState(() => menuVerseStore.getRestaurantBySlug() || null);
-  const [analytics, setAnalytics] = useState<AnalyticsSummary | null>(null);
+  const [restaurant, setRestaurant] = useState<Restaurant | null>(
+    () => menuVerseStore.getRestaurantBySlug() || null
+  );
+  const [analytics, setAnalytics] = useState<AnalyticsSummary | null>(() => {
+    const rest = menuVerseStore.getRestaurantBySlug();
+    return rest ? menuVerseStore.getAnalyticsSummary(rest.id) : null;
+  });
 
   useEffect(() => {
     const update = () => {
@@ -51,8 +56,8 @@ export default function DashboardOverviewPage() {
 
         {/* Action Toolbar - Clean, mobile friendly */}
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto shrink-0">
-          <Link href={`/r/${restaurant.slug}`} target="_blank" className="w-full sm:w-auto">
-            <Button variant="outline" size="sm" className="w-full sm:w-auto h-9 px-3 text-xs font-semibold text-slate-700 bg-white border-slate-200/90 hover:bg-slate-50 hover:text-slate-900 shadow-2xs rounded-lg flex items-center justify-center gap-1.5 whitespace-nowrap">
+          <Link href={`/r/${restaurant.slug}`} prefetch={true} className="w-full sm:w-auto">
+            <Button variant="outline" size="sm" className="w-full sm:w-auto h-9 px-3 text-xs font-semibold text-slate-700 bg-white border-slate-200/90 hover:bg-slate-50 hover:text-slate-900 shadow-2xs rounded-lg flex items-center justify-center gap-1.5 whitespace-nowrap cursor-pointer">
               <span>View Public Menu</span>
               <ArrowUpRight className="w-3.5 h-3.5 text-slate-400" />
             </Button>

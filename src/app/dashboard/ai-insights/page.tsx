@@ -17,8 +17,13 @@ import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 
 export default function AIInsightsPage() {
-  const [restaurant, setRestaurant] = useState<Restaurant | null>(null);
-  const [selectedDishId, setSelectedDishId] = useState<string>("");
+  const [restaurant, setRestaurant] = useState<Restaurant | null>(
+    () => menuVerseStore.getRestaurantBySlug() || null
+  );
+  const [selectedDishId, setSelectedDishId] = useState<string>(() => {
+    const r = menuVerseStore.getRestaurantBySlug();
+    return r?.menuItems?.[0]?.id || "";
+  });
   const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
