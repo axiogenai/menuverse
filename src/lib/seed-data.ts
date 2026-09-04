@@ -814,6 +814,13 @@ class MenuVerseStore {
   private loadFromStorage() {
     if (typeof window === "undefined") return;
     try {
+      const dataVersion = localStorage.getItem("menuverse_data_version");
+      if (dataVersion !== "v4-hotel-gypsy") {
+        this.resetAllData();
+        localStorage.setItem("menuverse_data_version", "v4-hotel-gypsy");
+        return;
+      }
+
       const rest = localStorage.getItem("menuverse_restaurants");
       const cats = localStorage.getItem("menuverse_categories");
       const dishes = localStorage.getItem("menuverse_dishes");

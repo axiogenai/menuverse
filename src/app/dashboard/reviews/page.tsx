@@ -5,10 +5,14 @@ import {
   MessageSquareQuote, 
   ChefHat, 
   Utensils,
+  ThumbsUp,
+  AlertTriangle,
+  Globe,
+  Crown,
 } from "lucide-react";
 import { Review, Restaurant } from "@/types";
 import { menuVerseStore } from "@/lib/seed-data";
-import { formatRelativeTime, getSentimentColor } from "@/lib/utils";
+import { formatRelativeTime } from "@/lib/utils";
 import { StarRating } from "@/components/shared/StarRating";
 import { Button } from "@/components/ui/button";
 import { ReviewReplyModal } from "@/components/dashboard/ReviewReplyModal";
@@ -20,7 +24,7 @@ export default function ReviewsManagementPage() {
 
   useEffect(() => {
     const update = () => {
-      const rest = menuVerseStore.getRestaurantBySlug();
+      const rest = menuVerseStore.getRestaurantBySlug("hotel-gypsy") || menuVerseStore.getRestaurants()[0];
       if (rest) setRestaurant({ ...rest });
     };
     update();
@@ -75,10 +79,10 @@ export default function ReviewsManagementPage() {
       </div>
 
       {/* Filter Tabs */}
-      <div className="flex items-center gap-1.5 overflow-x-auto text-xs">
+      <div className="flex items-center gap-1.5 overflow-x-auto text-xs pb-1">
         <button
           onClick={() => setFilter("ALL")}
-          className={`px-3 py-1.5 rounded-lg font-medium transition-colors shrink-0 ${
+          className={`px-3 py-1.5 rounded-lg font-medium transition-colors shrink-0 cursor-pointer ${
             filter === "ALL"
               ? "bg-slate-900 text-white font-semibold shadow-xs"
               : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-50"
@@ -88,7 +92,7 @@ export default function ReviewsManagementPage() {
         </button>
         <button
           onClick={() => setFilter("UNREPLIED")}
-          className={`px-3 py-1.5 rounded-lg font-medium transition-colors shrink-0 ${
+          className={`px-3 py-1.5 rounded-lg font-medium transition-colors shrink-0 cursor-pointer ${
             filter === "UNREPLIED"
               ? "bg-slate-900 text-white font-semibold shadow-xs"
               : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-50"
@@ -98,7 +102,7 @@ export default function ReviewsManagementPage() {
         </button>
         <button
           onClick={() => setFilter("POSITIVE")}
-          className={`px-3 py-1.5 rounded-lg font-medium transition-colors shrink-0 ${
+          className={`px-3 py-1.5 rounded-lg font-medium transition-colors shrink-0 cursor-pointer ${
             filter === "POSITIVE"
               ? "bg-slate-900 text-white font-semibold shadow-xs"
               : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-50"
@@ -108,7 +112,7 @@ export default function ReviewsManagementPage() {
         </button>
         <button
           onClick={() => setFilter("NEGATIVE")}
-          className={`px-3 py-1.5 rounded-lg font-medium transition-colors shrink-0 ${
+          className={`px-3 py-1.5 rounded-lg font-medium transition-colors shrink-0 cursor-pointer ${
             filter === "NEGATIVE"
               ? "bg-slate-900 text-white font-semibold shadow-xs"
               : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-50"
@@ -130,7 +134,7 @@ export default function ReviewsManagementPage() {
           </p>
         </div>
       ) : (
-        <div className="space-y-3">
+        <div className="space-y-4">
           {filteredReviews.map((rev) => {
             const dish = restaurant.menuItems?.find((d) => d.id === rev.menuItemId);
             const dishImage = dish?.images?.[0]?.url || rev.images?.[0]?.url;
@@ -138,85 +142,139 @@ export default function ReviewsManagementPage() {
             return (
               <div
                 key={rev.id}
-                className="p-4 rounded-xl bg-white border border-slate-200/90 shadow-[0_1px_3px_rgba(0,0,0,0.04)] space-y-2.5 hover:border-slate-300 transition-colors"
+                className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200/90 shadow-[0_1px_4px_rgba(0,0,0,0.04)] space-y-3.5 hover:border-slate-300 transition-all"
               >
-                {/* Header Row: User Info & Star Rating on Left + Dish Thumbnail on Right */}
-                <div className="flex items-center justify-between gap-3">
-                  <div className="flex items-center gap-2.5 min-w-0">
-                    <div className="h-8 w-8 rounded-full overflow-hidden bg-slate-100 shrink-0 border border-slate-200">
-                      {rev.avatarUrl ? (
-                        <img src={rev.avatarUrl} alt="" className="w-full h-full object-cover" />
-                      ) : (
-                        <div className="w-full h-full flex items-center justify-center font-bold text-xs text-slate-700">
-                          {rev.displayName.charAt(0)}
-                        </div>
-                      )}
-                    </div>
-                    <div className="flex items-center gap-2 flex-wrap min-w-0">
-                      <span className="font-semibold text-xs text-slate-900 truncate">
-                        {rev.displayName}
-                      </span>
-                      <span className="text-[10px] px-1.5 py-0.2 rounded bg-slate-100 text-slate-600 font-medium">
-                        Verified Diner
-                      </span>
-                      <span className="text-slate-300 hidden sm:inline">•</span>
-                      <div className="flex items-center">
-                        <StarRating rating={rev.rating} size="sm" showValue={true} />
+                {/* 1. TOP BAR: Dish Image & Name on TOP (never squeezed to the right) */}
+                {dish && (
+                  <div className="flex items-center justify-between gap-2 pb-2.5 border-b border-slate-100">
+                    <div className="flex items-center gap-2.5 min-w-0">
+                      <div className="h-7 w-7 rounded-lg bg-slate-100 overflow-hidden shrink-0 border border-slate-200 shadow-2xs">
+                        {dishImage ? (
+                          <img
+                            src={dishImage}
+                            alt={dish.name}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-slate-400">
+                            <Utensils className="w-3.5 h-3.5" />
+                          </div>
+                        )}
                       </div>
-                      <span className="text-[11px] text-slate-400 font-normal">
-                        {formatRelativeTime(rev.createdAt)}
-                      </span>
+                      <div className="min-w-0">
+                        <span className="font-semibold text-xs sm:text-sm text-slate-900 block truncate">
+                          {dish.name}
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Sentiment Badge */}
+                    <div className="shrink-0">
+                      {rev.aiSentiment === "POSITIVE" ? (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                          <ThumbsUp className="w-2.5 h-2.5" />
+                          <span>Positive</span>
+                        </span>
+                      ) : rev.aiSentiment === "NEGATIVE" ? (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-rose-50 text-rose-700 border border-rose-200">
+                          <AlertTriangle className="w-2.5 h-2.5" />
+                          <span>Needs Attention</span>
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-medium bg-slate-100 text-slate-600">
+                          Neutral
+                        </span>
+                      )}
                     </div>
                   </div>
+                )}
 
-                  {/* Dish Tag with Integrated Image on Right */}
-                  {dish && (
-                    <div className="flex items-center gap-1.5 p-1 pl-1.5 pr-2.5 rounded-lg bg-slate-50 border border-slate-200 text-slate-700 font-medium text-xs shrink-0">
-                      {dishImage ? (
-                        <img
-                          src={dishImage}
-                          alt={dish.name}
-                          className="w-5 h-5 rounded object-cover shrink-0 border border-slate-200"
-                        />
+                {/* 2. REVIEWER PROFILE & RATING ROW */}
+                <div className="flex items-center gap-3">
+                  <div className="h-9 w-9 rounded-full overflow-hidden bg-gradient-to-br from-slate-100 to-slate-200 shrink-0 border border-slate-200 shadow-2xs flex items-center justify-center">
+                    {rev.avatarUrl ? (
+                      <img src={rev.avatarUrl} alt="" className="w-full h-full object-cover" />
+                    ) : (
+                      <span className="font-bold text-xs text-slate-700">
+                        {rev.displayName.charAt(0)}
+                      </span>
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0 space-y-0.5">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <span className="font-bold text-xs sm:text-sm text-slate-900">
+                        {rev.displayName}
+                      </span>
+                      {rev.isGoogleReview ? (
+                        <span className="text-[10px] px-1.5 py-0.2 rounded bg-blue-50 text-blue-700 border border-blue-200 font-semibold inline-flex items-center gap-1">
+                          <Globe className="w-2.5 h-2.5" /> Google Review
+                        </span>
                       ) : (
-                        <Utensils className="w-3.5 h-3.5 text-slate-500" />
+                        <span className="text-[10px] px-1.5 py-0.2 rounded bg-slate-100 text-slate-600 font-medium">
+                          Verified Diner
+                        </span>
                       )}
-                      <span className="truncate max-w-[120px] sm:max-w-[180px]">{dish.name}</span>
+                      <span className="text-[11px] text-slate-400 font-normal">
+                        • {formatRelativeTime(rev.createdAt)}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-1.5 pt-0.5">
+                      <StarRating rating={rev.rating} size="sm" showValue={true} />
+                    </div>
+                  </div>
+                </div>
+
+                {/* 3. REVIEW TEXT & CUSTOMER PHOTOS */}
+                <div className="space-y-2">
+                  <p className="text-xs sm:text-sm text-slate-700 leading-relaxed font-normal">
+                    {rev.reviewText}
+                  </p>
+
+                  {rev.images && rev.images.length > 0 && (
+                    <div className="flex items-center gap-2 pt-1 flex-wrap">
+                      {rev.images.map((img, i) => (
+                        <div
+                          key={img.id || i}
+                          className="h-16 w-16 rounded-xl overflow-hidden border border-slate-200 shadow-2xs shrink-0"
+                        >
+                          <img src={img.url} alt="" className="w-full h-full object-cover" />
+                        </div>
+                      ))}
                     </div>
                   )}
                 </div>
 
-                {/* Review Text */}
-                <p className="text-xs text-slate-700 leading-relaxed font-normal sm:pl-10.5">
-                  {rev.reviewText}
-                </p>
-
-                {/* Owner Reply Section - Ultra Slim */}
+                {/* 4. OWNER RESPONSE OR ACTION BAR */}
                 {rev.ownerReplyText ? (
-                  <div className="sm:ml-10.5 p-2.5 rounded-lg bg-slate-50 border-l-2 border-slate-900 text-xs flex items-start justify-between gap-2">
-                    <div className="space-y-0.5 min-w-0">
-                      <span className="font-semibold text-[11px] text-slate-900 block">Owner Response:</span>
-                      <p className="text-slate-600 italic font-normal text-xs">{rev.ownerReplyText}</p>
+                  <div className="p-3 rounded-xl bg-slate-50 border-l-3 border-orange-500 text-xs space-y-1">
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="font-bold text-[11px] text-slate-900 flex items-center gap-1">
+                        <Crown className="w-3 h-3 text-amber-500" />
+                        Hotel Gypsy (Owner Response)
+                      </span>
+                      <button
+                        onClick={() => setReplyingReview(rev)}
+                        className="text-[11px] text-slate-500 hover:text-slate-900 font-semibold cursor-pointer"
+                      >
+                        Edit
+                      </button>
                     </div>
-                    <button
-                      onClick={() => setReplyingReview(rev)}
-                      className="text-xs text-slate-500 hover:text-slate-900 font-medium shrink-0 pt-0.5"
-                    >
-                      Edit
-                    </button>
+                    <p className="text-slate-600 italic font-normal text-xs sm:text-sm leading-relaxed">
+                      {rev.ownerReplyText}
+                    </p>
                   </div>
                 ) : (
-                  <div className="sm:pl-10.5 flex items-center justify-between text-xs text-slate-400 pt-0.5">
-                    <span className="text-[11px]">
-                      {rev.helpfulVotes > 0 ? `${rev.helpfulVotes} diners found this helpful` : ""}
+                  <div className="flex items-center justify-between gap-2 pt-1">
+                    <span className="text-[11px] text-slate-400 font-normal">
+                      {rev.helpfulVotes > 0 ? `👍 ${rev.helpfulVotes} diners found this helpful` : "No replies yet"}
                     </span>
                     <Button
                       onClick={() => setReplyingReview(rev)}
-                      className="h-7 px-2.5 text-xs font-semibold text-white bg-slate-900 hover:bg-slate-800 rounded-md shadow-xs flex items-center gap-1.5 transition-colors"
+                      className="h-7.5 px-3 text-xs font-semibold text-white bg-slate-900 hover:bg-slate-800 rounded-lg shadow-xs flex items-center gap-1.5 transition-colors cursor-pointer"
                       size="sm"
                     >
-                      <ChefHat className="w-3 h-3 text-orange-400" />
-                      <span>Reply</span>
+                      <ChefHat className="w-3.5 h-3.5 text-orange-400" />
+                      <span>Reply to Diner</span>
                     </Button>
                   </div>
                 )}
