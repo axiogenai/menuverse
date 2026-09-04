@@ -97,8 +97,9 @@ export function DashboardSidebar() {
   const venueName = restaurant?.name || "My Restaurant";
 
   return (
-    <aside className="w-60 shrink-0 bg-white text-slate-800 border-r border-slate-200 flex flex-col justify-between hidden md:flex sticky top-16 h-[calc(100vh-4rem)] overflow-y-auto">
-      <div className="p-3 space-y-4">
+    <aside className="hidden md:flex w-60 shrink-0 bg-white text-slate-800 border-r border-slate-200 flex-col justify-between sticky top-16 h-[calc(100vh-4rem)]">
+      {/* Scrollable Nav Area */}
+      <div className="p-3 space-y-4 overflow-y-auto flex-1">
         {/* Workspace Selector */}
         <div className="flex items-center justify-between p-2 rounded-lg border border-slate-200 bg-slate-50/70 hover:bg-slate-100 transition-colors cursor-pointer">
           <div className="flex items-center gap-2.5 min-w-0">
@@ -154,8 +155,8 @@ export function DashboardSidebar() {
         </div>
       </div>
 
-      {/* Bottom Action - View Public Menu */}
-      <div className="p-3 border-t border-slate-200 bg-slate-50/50">
+      {/* Bottom Action - Always Pinned at Bottom */}
+      <div className="shrink-0 p-3 border-t border-slate-200 bg-slate-50/50">
         <Link
           href={`/r/${venueSlug}`}
           className="flex items-center justify-center gap-1.5 w-full py-2 px-3 rounded-lg bg-orange-600 hover:bg-orange-500 text-white text-xs font-semibold shadow-xs transition-all active:scale-95 cursor-pointer"
