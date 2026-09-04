@@ -163,7 +163,7 @@ export const INITIAL_DISHES: MenuItem[] = [
       {
         id: "img-01",
         menuItemId: "dish-01",
-        url: "https://images.unsplash.com/photo-1610057099443-fde8c4d50f91?auto=format&fit=crop&w=800&q=80",
+        url: "https://images.unsplash.com/photo-1596797038530-2c107229654b?auto=format&fit=crop&w=800&q=80",
         isPrimary: true,
         displayOrder: 1,
       },
@@ -200,7 +200,7 @@ export const INITIAL_DISHES: MenuItem[] = [
       {
         id: "img-02",
         menuItemId: "dish-02",
-        url: "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=800&q=80",
+        url: "https://images.unsplash.com/photo-1574653853027-5382a3d23a15?auto=format&fit=crop&w=800&q=80",
         isPrimary: true,
         displayOrder: 1,
       },
@@ -237,14 +237,14 @@ export const INITIAL_DISHES: MenuItem[] = [
       {
         id: "img-03",
         menuItemId: "dish-03",
-        url: "https://images.unsplash.com/photo-1599488615731-7e5c2823ff28?auto=format&fit=crop&w=800&q=80",
+        url: "https://images.unsplash.com/photo-1567188040759-fb8a883dc6d8?auto=format&fit=crop&w=800&q=80",
         isPrimary: true,
         displayOrder: 1,
       },
       {
         id: "img-03-b",
         menuItemId: "dish-03",
-        url: "https://images.unsplash.com/photo-1567188040759-fb8a883dc6d8?auto=format&fit=crop&w=800&q=80",
+        url: "https://images.unsplash.com/photo-1603894584373-5ac82b2ae398?auto=format&fit=crop&w=800&q=80",
         isPrimary: false,
         displayOrder: 2,
       },
@@ -281,7 +281,7 @@ export const INITIAL_DISHES: MenuItem[] = [
       {
         id: "img-04-b",
         menuItemId: "dish-04",
-        url: "https://images.unsplash.com/photo-1601050690597-df0568f70950?auto=format&fit=crop&w=800&q=80",
+        url: "https://images.unsplash.com/photo-1631452180519-c014fe946bc7?auto=format&fit=crop&w=800&q=80",
         isPrimary: false,
         displayOrder: 2,
       },
@@ -318,7 +318,7 @@ export const INITIAL_DISHES: MenuItem[] = [
       {
         id: "img-05-b",
         menuItemId: "dish-05",
-        url: "https://images.unsplash.com/photo-1633945274405-b6c8069047b0?auto=format&fit=crop&w=800&q=80",
+        url: "https://images.unsplash.com/photo-1589302168068-964664d93dc0?auto=format&fit=crop&w=800&q=80",
         isPrimary: false,
         displayOrder: 2,
       },
@@ -355,7 +355,7 @@ export const INITIAL_DISHES: MenuItem[] = [
       {
         id: "img-06-b",
         menuItemId: "dish-06",
-        url: "https://images.unsplash.com/photo-1546833999-b9f581a1996d?auto=format&fit=crop&w=800&q=80",
+        url: "https://images.unsplash.com/photo-1603894584373-5ac82b2ae398?auto=format&fit=crop&w=800&q=80",
         isPrimary: false,
         displayOrder: 2,
       },
@@ -392,7 +392,7 @@ export const INITIAL_DISHES: MenuItem[] = [
       {
         id: "img-07-b",
         menuItemId: "dish-07",
-        url: "https://images.unsplash.com/photo-1626777552726-4a6b54c97e46?auto=format&fit=crop&w=800&q=80",
+        url: "https://images.unsplash.com/photo-1596797038530-2c107229654b?auto=format&fit=crop&w=800&q=80",
         isPrimary: false,
         displayOrder: 2,
       },
@@ -422,14 +422,14 @@ export const INITIAL_DISHES: MenuItem[] = [
       {
         id: "img-08",
         menuItemId: "dish-08",
-        url: "https://images.unsplash.com/photo-1601050690597-df0568f70950?auto=format&fit=crop&w=800&q=80",
+        url: "https://images.unsplash.com/photo-1565557623262-b51c2513a641?auto=format&fit=crop&w=800&q=80",
         isPrimary: true,
         displayOrder: 1,
       },
       {
         id: "img-08-b",
         menuItemId: "dish-08",
-        url: "https://images.unsplash.com/photo-1565557623262-b51c2513a641?auto=format&fit=crop&w=800&q=80",
+        url: "https://images.unsplash.com/photo-1606491956689-2ea866880c84?auto=format&fit=crop&w=800&q=80",
         isPrimary: false,
         displayOrder: 2,
       },
@@ -459,14 +459,14 @@ export const INITIAL_DISHES: MenuItem[] = [
       {
         id: "img-09",
         menuItemId: "dish-09",
-        url: "https://images.unsplash.com/photo-1599785209707-a456fc1337bb?auto=format&fit=crop&w=800&q=80",
+        url: "https://images.unsplash.com/photo-1587314168485-3236d6710814?auto=format&fit=crop&w=800&q=80",
         isPrimary: true,
         displayOrder: 1,
       },
       {
         id: "img-09-b",
         menuItemId: "dish-09",
-        url: "https://images.unsplash.com/photo-1551024709-8f23befc6f87?auto=format&fit=crop&w=800&q=80",
+        url: "https://images.unsplash.com/photo-1551024601-bec78aea704b?auto=format&fit=crop&w=800&q=80",
         isPrimary: false,
         displayOrder: 2,
       },
@@ -815,9 +815,9 @@ class MenuVerseStore {
     if (typeof window === "undefined") return;
     try {
       const dataVersion = localStorage.getItem("menuverse_data_version");
-      if (dataVersion !== "v5-food-only-photos") {
+      if (dataVersion !== "v7-authentic-indian-dishes") {
         this.resetAllData();
-        localStorage.setItem("menuverse_data_version", "v5-food-only-photos");
+        localStorage.setItem("menuverse_data_version", "v7-authentic-indian-dishes");
         return;
       }
 
@@ -849,30 +849,24 @@ class MenuVerseStore {
         if (Array.isArray(parsed) && parsed.length > 0) {
           const initMap = new Map(INITIAL_DISHES.map((d) => [d.id, d]));
           const fallbackImgs = [
-            "https://images.unsplash.com/photo-1610057099443-fde8c4d50f91?auto=format&fit=crop&w=800&q=80",
-            "https://images.unsplash.com/photo-1546833999-b9f581a1996d?auto=format&fit=crop&w=800&q=80",
-            "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?auto=format&fit=crop&w=800&q=80",
-            "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=800&q=80",
+            "https://images.unsplash.com/photo-1596797038530-2c107229654b?auto=format&fit=crop&w=800&q=80",
+            "https://images.unsplash.com/photo-1574653853027-5382a3d23a15?auto=format&fit=crop&w=800&q=80",
             "https://images.unsplash.com/photo-1567188040759-fb8a883dc6d8?auto=format&fit=crop&w=800&q=80",
+            "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?auto=format&fit=crop&w=800&q=80",
             "https://images.unsplash.com/photo-1631452180519-c014fe946bc7?auto=format&fit=crop&w=800&q=80",
-            "https://images.unsplash.com/photo-1601050690597-df0568f70950?auto=format&fit=crop&w=800&q=80",
+            "https://images.unsplash.com/photo-1546833999-b9f581a1996d?auto=format&fit=crop&w=800&q=80",
+            "https://images.unsplash.com/photo-1565557623262-b51c2513a641?auto=format&fit=crop&w=800&q=80",
           ];
           this.dishes = parsed.map((d: MenuItem, idx: number) => {
             const seed = initMap.get(d.id);
-            // Auto-repair any known stale/broken URLs
+            // Always prioritize authentic seed food photography for initial seed dishes
             const cleanImages = (seed?.images && seed.images.length > 0)
               ? seed.images
               : (d.images || [])
-                  .filter((img) => img && typeof img.url === "string" && img.url.trim().startsWith("http") && !img.url.includes("photo-1541781774459"))
+                  .filter((img) => img && typeof img.url === "string" && img.url.trim().startsWith("http") && !img.url.includes("photo-1541781774459") && !img.url.includes("photo-1599488615731"))
                   .map((img) => {
-                    if (img.url.includes("photo-1541781774459")) {
-                      return { ...img, url: "https://images.unsplash.com/photo-1599785209707-a456fc1337bb?auto=format&fit=crop&w=800&q=80" };
-                    }
-                    if (img.url.includes("photo-1592417817098-8f3d6910985b")) {
-                      return { ...img, url: "https://images.unsplash.com/photo-1610057099443-fde8c4d50f91?auto=format&fit=crop&w=800&q=80" };
-                    }
-                    if (img.url.includes("photo-1621996346565-e3d5d6281292") || img.url.includes("photo-1612874742237-6526221588e3")) {
-                      return { ...img, url: "https://images.unsplash.com/photo-1610057099443-fde8c4d50f91?auto=format&fit=crop&w=800&q=80" };
+                    if (img.url.includes("photo-1592417817098-8f3d6910985b") || img.url.includes("photo-1621996346565-e3d5d6281292")) {
+                      return { ...img, url: fallbackImgs[idx % fallbackImgs.length] };
                     }
                     return img;
                   });
