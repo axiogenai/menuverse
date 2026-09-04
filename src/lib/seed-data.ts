@@ -459,14 +459,14 @@ export const INITIAL_DISHES: MenuItem[] = [
       {
         id: "img-09",
         menuItemId: "dish-09",
-        url: "https://images.unsplash.com/photo-1541781774459-bb2af2f05b55?auto=format&fit=crop&w=800&q=80",
+        url: "https://images.unsplash.com/photo-1599785209707-a456fc1337bb?auto=format&fit=crop&w=800&q=80",
         isPrimary: true,
         displayOrder: 1,
       },
       {
         id: "img-09-b",
         menuItemId: "dish-09",
-        url: "https://images.unsplash.com/photo-1589301760014-d929f3979dbc?auto=format&fit=crop&w=800&q=80",
+        url: "https://images.unsplash.com/photo-1551024709-8f23befc6f87?auto=format&fit=crop&w=800&q=80",
         isPrimary: false,
         displayOrder: 2,
       },
@@ -815,9 +815,9 @@ class MenuVerseStore {
     if (typeof window === "undefined") return;
     try {
       const dataVersion = localStorage.getItem("menuverse_data_version");
-      if (dataVersion !== "v4-hotel-gypsy") {
+      if (dataVersion !== "v5-food-only-photos") {
         this.resetAllData();
-        localStorage.setItem("menuverse_data_version", "v4-hotel-gypsy");
+        localStorage.setItem("menuverse_data_version", "v5-food-only-photos");
         return;
       }
 
@@ -849,13 +849,13 @@ class MenuVerseStore {
         if (Array.isArray(parsed) && parsed.length > 0) {
           const initMap = new Map(INITIAL_DISHES.map((d) => [d.id, d]));
           const fallbackImgs = [
-            "https://images.unsplash.com/photo-1612874742237-6526221588e3?auto=format&fit=crop&w=2560&q=90",
-            "https://images.unsplash.com/photo-1608897013039-887f21d8c804?auto=format&fit=crop&w=2560&q=90",
-            "https://images.unsplash.com/photo-1604382355076-af4b0eb60143?auto=format&fit=crop&w=2560&q=90",
-            "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=2560&q=90",
-            "https://images.unsplash.com/photo-1551183053-bf91a1d81141?auto=format&fit=crop&w=2560&q=90",
-            "https://images.unsplash.com/photo-1565299624946-b28f40a0ae38?auto=format&fit=crop&w=2560&q=90",
-            "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?auto=format&fit=crop&w=2560&q=90",
+            "https://images.unsplash.com/photo-1610057099443-fde8c4d50f91?auto=format&fit=crop&w=800&q=80",
+            "https://images.unsplash.com/photo-1546833999-b9f581a1996d?auto=format&fit=crop&w=800&q=80",
+            "https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?auto=format&fit=crop&w=800&q=80",
+            "https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=800&q=80",
+            "https://images.unsplash.com/photo-1567188040759-fb8a883dc6d8?auto=format&fit=crop&w=800&q=80",
+            "https://images.unsplash.com/photo-1631452180519-c014fe946bc7?auto=format&fit=crop&w=800&q=80",
+            "https://images.unsplash.com/photo-1601050690597-df0568f70950?auto=format&fit=crop&w=800&q=80",
           ];
           this.dishes = parsed.map((d: MenuItem, idx: number) => {
             const seed = initMap.get(d.id);
@@ -863,13 +863,16 @@ class MenuVerseStore {
             const cleanImages = (seed?.images && seed.images.length > 0)
               ? seed.images
               : (d.images || [])
-                  .filter((img) => img && typeof img.url === "string" && img.url.trim().startsWith("http"))
+                  .filter((img) => img && typeof img.url === "string" && img.url.trim().startsWith("http") && !img.url.includes("photo-1541781774459"))
                   .map((img) => {
-                    if (img.url.includes("photo-1592417817098-8f3d6910985b")) {
-                      return { ...img, url: "https://images.unsplash.com/photo-1608897013039-887f21d8c804?auto=format&fit=crop&w=2560&q=90" };
+                    if (img.url.includes("photo-1541781774459")) {
+                      return { ...img, url: "https://images.unsplash.com/photo-1599785209707-a456fc1337bb?auto=format&fit=crop&w=800&q=80" };
                     }
-                    if (img.url.includes("photo-1621996346565-e3d5d6281292")) {
-                      return { ...img, url: "https://images.unsplash.com/photo-1612874742237-6526221588e3?auto=format&fit=crop&w=2560&q=90" };
+                    if (img.url.includes("photo-1592417817098-8f3d6910985b")) {
+                      return { ...img, url: "https://images.unsplash.com/photo-1610057099443-fde8c4d50f91?auto=format&fit=crop&w=800&q=80" };
+                    }
+                    if (img.url.includes("photo-1621996346565-e3d5d6281292") || img.url.includes("photo-1612874742237-6526221588e3")) {
+                      return { ...img, url: "https://images.unsplash.com/photo-1610057099443-fde8c4d50f91?auto=format&fit=crop&w=800&q=80" };
                     }
                     return img;
                   });

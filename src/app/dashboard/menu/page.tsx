@@ -368,7 +368,7 @@ export default function MenuStudioPage() {
                   const img =
                     rawImg && rawImg.startsWith("http")
                       ? rawImg
-                      : "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=400&q=80";
+                      : "https://images.unsplash.com/photo-1610057099443-fde8c4d50f91?auto=format&fit=crop&w=400&q=80";
 
                   return (
                     <tr key={dish.id} className="hover:bg-slate-50/60 transition-colors">
@@ -381,7 +381,7 @@ export default function MenuStudioPage() {
                               alt={dish.name}
                               className="w-full h-full object-cover"
                               onError={(e) => {
-                                (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=400&q=80";
+                                (e.target as HTMLImageElement).src = "https://images.unsplash.com/photo-1610057099443-fde8c4d50f91?auto=format&fit=crop&w=400&q=80";
                               }}
                             />
                           </div>

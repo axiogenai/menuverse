@@ -100,7 +100,7 @@ export function DishDetailModal({
   if (allImages.length === 0) {
     allImages.push({
       id: `fallback-${dish.id}`,
-      url: "https://images.unsplash.com/photo-1621996346565-e3d5d6281292?auto=format&fit=crop&w=2560&q=90",
+      url: "https://images.unsplash.com/photo-1610057099443-fde8c4d50f91?auto=format&fit=crop&w=800&q=80",
       isPrimary: true,
     });
   }

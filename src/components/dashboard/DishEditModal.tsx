@@ -98,7 +98,7 @@ export function DishEditModal({
       setCategoryId(categories[0]?.id || "");
       setPrice("18.00");
       setDescription("");
-      setImageUrl("https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=800&q=80");
+      setImageUrl("https://images.unsplash.com/photo-1610057099443-fde8c4d50f91?auto=format&fit=crop&w=800&q=80");
       setPrepTime("15");
       setSpicyLevel(0);
       setIsVegetarian(false);

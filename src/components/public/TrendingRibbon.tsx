@@ -11,7 +11,7 @@ interface TrendingRibbonProps {
   onSelectDish: (dish: MenuItem) => void;
 }
 
-const FALLBACK_IMAGE = "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80";
+const FALLBACK_IMAGE = "https://images.unsplash.com/photo-1610057099443-fde8c4d50f91?auto=format&fit=crop&w=600&q=80";
 
 export function TrendingRibbon({ dishes, onSelectDish }: TrendingRibbonProps) {
   const [isPaused, setIsPaused] = useState(false);

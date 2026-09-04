@@ -158,7 +158,7 @@ export function WriteReviewModal({
       menuItemId: dish.id,
       restaurantId: dish.restaurantId,
       displayName: displayName.trim(),
-      avatarUrl: `https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(displayName)}`,
+      avatarUrl: `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(displayName)}&backgroundColor=0f172a,d97706,059669,2563eb,dc2626`,
       rating,
       reviewText: reviewText.trim(),
       aiSentiment: sentiment.sentiment,

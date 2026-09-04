@@ -228,7 +228,7 @@ export function AnalyticsCharts({ data }: AnalyticsChartsProps) {
                 const dishImg =
                   item.dish.images && item.dish.images.length > 0 && item.dish.images[0].url.startsWith("http")
                     ? item.dish.images[0].url
-                    : "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=400&q=80";
+                    : "https://images.unsplash.com/photo-1610057099443-fde8c4d50f91?auto=format&fit=crop&w=400&q=80";
                 const views = item.viewCount || (idx === 0 ? 342 : idx === 1 ? 289 : 250);
                 const reviews = item.reviewCount || (idx === 0 ? 28 : idx === 1 ? 19 : 18);
                 const convRate = ((reviews / views) * 100).toFixed(1);

@@ -26,7 +26,7 @@ export function DishCard({ dish, onSelect, onOpenReviewModal }: DishCardProps) {
   const primaryImg =
     validImages.length > 0
       ? validImages[0].url
-      : "https://images.unsplash.com/photo-1612874742237-6526221588e3?auto=format&fit=crop&w=2560&q=90";
+      : "https://images.unsplash.com/photo-1610057099443-fde8c4d50f91?auto=format&fit=crop&w=800&q=80";
   const photoCount = stats?.customerPhotoCount || (dish.images ? dish.images.length : 0);
   const recPct = stats?.recommendationPercentage || 100;
   const reviewCount = stats?.totalReviews || (dish.reviews ? dish.reviews.length : 0);

@@ -14,7 +14,7 @@ export async function POST(request: Request) {
 
     const moderation = screenReviewContent(reviewText);
     const sentiment = analyzeReviewSentiment(reviewText, rating);
-    const avatarUrl = `https://api.dicebear.com/7.x/adventurer/svg?seed=${encodeURIComponent(displayName || "Diner")}`;
+    const avatarUrl = `https://api.dicebear.com/7.x/initials/svg?seed=${encodeURIComponent(displayName || "Diner")}&backgroundColor=0f172a,d97706,059669,2563eb,dc2626`;
 
     // 1. Save to Supabase PostgreSQL
     try {
