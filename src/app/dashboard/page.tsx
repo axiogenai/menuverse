@@ -50,16 +50,16 @@ export default function DashboardOverviewPage() {
         </div>
 
         {/* Action Toolbar - Clean, mobile friendly */}
-        <div className="flex items-center gap-2 shrink-0">
-          <Link href={`/r/${restaurant.slug}`} target="_blank" className="shrink-0">
-            <Button variant="outline" size="sm" className="h-9 px-3 text-xs font-semibold text-slate-700 bg-white border-slate-200/90 hover:bg-slate-50 hover:text-slate-900 shadow-2xs rounded-lg flex items-center gap-1.5 shrink-0 whitespace-nowrap">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto shrink-0">
+          <Link href={`/r/${restaurant.slug}`} target="_blank" className="w-full sm:w-auto">
+            <Button variant="outline" size="sm" className="w-full sm:w-auto h-9 px-3 text-xs font-semibold text-slate-700 bg-white border-slate-200/90 hover:bg-slate-50 hover:text-slate-900 shadow-2xs rounded-lg flex items-center justify-center gap-1.5 whitespace-nowrap">
               <span>View Public Menu</span>
               <ArrowUpRight className="w-3.5 h-3.5 text-slate-400" />
             </Button>
           </Link>
 
-          <Link href="/dashboard/menu" className="shrink-0">
-            <Button size="sm" className="h-9 px-3.5 text-xs font-semibold text-white bg-slate-900 hover:bg-slate-800 shadow-xs rounded-lg flex items-center gap-1.5 transition-colors shrink-0 whitespace-nowrap">
+          <Link href="/dashboard/menu" className="w-full sm:w-auto">
+            <Button size="sm" className="w-full sm:w-auto h-9 px-3.5 text-xs font-semibold text-white bg-slate-900 hover:bg-slate-800 shadow-xs rounded-lg flex items-center justify-center gap-1.5 transition-colors whitespace-nowrap">
               <Plus className="w-3.5 h-3.5 text-orange-400" />
               <span>Add Dish</span>
             </Button>

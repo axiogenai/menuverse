@@ -234,14 +234,14 @@ export default function QRStudioPage() {
               <label className="text-xs font-semibold text-slate-700">
                 QR Matrix Color
               </label>
-              <div className="grid grid-cols-4 gap-1 p-1 bg-slate-100 rounded-lg border border-slate-200/70">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-1 p-1 bg-slate-100 rounded-lg border border-slate-200/70">
                 {MATRIX_COLORS.map((c) => (
                   <button
                     key={c.hex}
                     type="button"
                     onClick={() => setFgColor(c.hex)}
                     className={cn(
-                      "py-1.5 text-xs font-medium rounded-md transition-all cursor-pointer flex items-center justify-center gap-1.5",
+                      "py-1.5 px-2 text-xs font-medium rounded-md transition-all cursor-pointer flex items-center justify-center gap-1.5",
                       fgColor === c.hex
                         ? "bg-white text-slate-900 font-semibold shadow-xs ring-1 ring-slate-200/80"
                         : "text-slate-600 hover:text-slate-900 hover:bg-slate-200/40"
@@ -280,7 +280,7 @@ export default function QRStudioPage() {
         </div>
 
         {/* Right Column: Realistic Luxury Table Tent Stand Preview (7 cols) */}
-        <div className="lg:col-span-7 flex flex-col items-center justify-center p-8 sm:p-10 rounded-xl bg-slate-50/80 border border-slate-200/90 shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
+        <div className="lg:col-span-7 flex flex-col items-center justify-center p-4 sm:p-10 rounded-xl bg-slate-50/80 border border-slate-200/90 shadow-[0_1px_3px_rgba(0,0,0,0.04)] overflow-hidden">
           <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-6">
             Live Table Stand Preview
           </span>
@@ -288,7 +288,7 @@ export default function QRStudioPage() {
           {/* Luxury Table Tent Card */}
           <div
             className={cn(
-              "relative w-72 sm:w-80 rounded-2xl p-6 text-center shadow-[0_20px_45px_-12px_rgba(0,0,0,0.18)] space-y-4 border transition-all duration-300",
+              "relative w-full max-w-[320px] rounded-2xl p-5 sm:p-6 text-center shadow-[0_20px_45px_-12px_rgba(0,0,0,0.18)] space-y-4 border transition-all duration-300",
               theme === "obsidian"
                 ? "bg-gradient-to-b from-slate-900 via-slate-900 to-slate-950 text-white border-slate-800"
                 : theme === "slate"

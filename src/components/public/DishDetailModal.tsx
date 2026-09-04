@@ -387,55 +387,52 @@ export function DishDetailModal({
                         key={rev.id}
                         className="p-3.5 rounded-2xl bg-stone-50/80 border border-stone-200/90 space-y-2.5 text-xs shadow-2xs"
                       >
-                        {/* Review Header, Text & Right-Aligned Photo Thumbnail */}
-                        <div className="flex items-start justify-between gap-3">
-                          {/* Left Column: Author info & Review Text */}
-                          <div className="space-y-1.5 flex-1 min-w-0">
-                            <div className="flex items-center gap-2">
-                              <div className="h-7 w-7 rounded-full overflow-hidden bg-stone-200 shrink-0 border border-stone-200 shadow-2xs flex items-center justify-center text-[11px] font-bold text-stone-700">
-                                {rev.avatarUrl ? (
-                                  <img src={rev.avatarUrl} alt="" className="w-full h-full object-cover" />
-                                ) : (
-                                  <span>{rev.displayName.charAt(0)}</span>
-                                )}
-                              </div>
-
-                              <div className="min-w-0">
-                                <span className="font-bold text-xs text-stone-900 block truncate leading-tight">
-                                  {rev.displayName}
-                                </span>
-                                <div className="flex items-center gap-1.5 text-[10px] text-stone-400 mt-0.5">
-                                  <StarRating rating={rev.rating} size="sm" />
-                                  <span>•</span>
-                                  <span>{formatRelativeTime(rev.createdAt)}</span>
-                                </div>
-                              </div>
+                        {/* 1. Review Header (Author + Rating + Time) */}
+                        <div className="flex items-center justify-between gap-2">
+                          <div className="flex items-center gap-2 min-w-0">
+                            <div className="h-7 w-7 rounded-full overflow-hidden bg-stone-200 shrink-0 border border-stone-200 shadow-2xs flex items-center justify-center text-[11px] font-bold text-stone-700">
+                              {rev.avatarUrl ? (
+                                <img src={rev.avatarUrl} alt="" className="w-full h-full object-cover" />
+                              ) : (
+                                <span>{rev.displayName.charAt(0)}</span>
+                              )}
                             </div>
 
-                            {/* Review Text */}
-                            <p className="text-xs text-stone-700 leading-relaxed font-normal pt-0.5">
-                              {rev.reviewText}
-                            </p>
+                            <div className="min-w-0">
+                              <span className="font-bold text-xs text-stone-900 block truncate leading-tight">
+                                {rev.displayName}
+                              </span>
+                              <div className="flex items-center gap-1.5 text-[10px] text-stone-400 mt-0.5">
+                                <StarRating rating={rev.rating} size="sm" />
+                                <span>•</span>
+                                <span>{formatRelativeTime(rev.createdAt)}</span>
+                              </div>
+                            </div>
                           </div>
-
-                          {/* Right Column: Clean Attached Photo Thumbnail */}
-                          {rev.images && rev.images.length > 0 && (
-                            <div className="shrink-0 flex items-center gap-1.5 pt-0.5">
-                              {rev.images.map((img, i) => (
-                                <div
-                                  key={i}
-                                  className="relative w-16 h-16 sm:w-18 sm:h-18 rounded-xl overflow-hidden shrink-0 border border-stone-200/90 shadow-xs bg-stone-100 cursor-pointer hover:opacity-90 hover:scale-105 transition-all"
-                                >
-                                  <img
-                                    src={img.url}
-                                    alt={img.caption || "Review photo"}
-                                    className="w-full h-full object-cover"
-                                  />
-                                </div>
-                              ))}
-                            </div>
-                          )}
                         </div>
+
+                        {/* 2. Review Text - Full Width */}
+                        <p className="text-xs text-stone-700 leading-relaxed font-normal">
+                          {rev.reviewText}
+                        </p>
+
+                        {/* 3. Attached Customer Photos - Neatly placed below text */}
+                        {rev.images && rev.images.length > 0 && (
+                          <div className="flex items-center gap-2 pt-1 overflow-x-auto hide-scrollbar">
+                            {rev.images.map((img, i) => (
+                              <div
+                                key={i}
+                                className="relative w-16 h-16 sm:w-20 sm:h-20 rounded-xl overflow-hidden shrink-0 border border-stone-200/90 shadow-2xs bg-stone-100 cursor-pointer hover:opacity-90 hover:scale-105 transition-all"
+                              >
+                                <img
+                                  src={img.url}
+                                  alt={img.caption || "Review photo"}
+                                  className="w-full h-full object-cover"
+                                />
+                              </div>
+                            ))}
+                          </div>
+                        )}
 
                         {/* Owner Reply */}
                         {rev.ownerReplyText && (

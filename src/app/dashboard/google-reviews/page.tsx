@@ -122,25 +122,25 @@ export default function GoogleReviewsSyncPage() {
 
   return (
     <div className="space-y-6">
-      {/* Header - Clean Single-Line Alignment */}
+      {/* Header - Clean Single-Line Alignment on desktop, responsive stack on mobile */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="text-xl font-bold tracking-tight text-slate-900 flex items-center gap-2">
-            <Globe className="w-5 h-5 text-blue-600" />
-            Google Reviews Syncer API
+            <Globe className="w-5 h-5 text-blue-600 shrink-0" />
+            <span>Google Reviews Syncer API</span>
           </h1>
           <p className="text-xs text-slate-500 mt-0.5">
             Powered by Axiogen Universal Reviews Engine — Zero Google Cloud API Key required.
           </p>
         </div>
 
-        {/* Action Buttons - Horizontal Row */}
-        <div className="flex items-center gap-2 shrink-0">
+        {/* Action Buttons - Stacked on mobile, side-by-side on desktop */}
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
           <a
             href={googleMapsUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="h-9 px-3 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold flex items-center gap-1.5 shadow-2xs transition-colors shrink-0"
+            className="h-9 px-3 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 text-xs font-semibold flex items-center justify-center gap-1.5 shadow-2xs transition-colors"
           >
             <span>View Google Maps</span>
             <ExternalLink className="w-3.5 h-3.5 text-slate-400" />
@@ -149,7 +149,7 @@ export default function GoogleReviewsSyncPage() {
           <Button
             onClick={handleSyncRealGoogleReviews}
             disabled={isSyncing}
-            className="h-9 px-3.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold shadow-xs flex items-center gap-1.5 transition-colors shrink-0 cursor-pointer"
+            className="h-9 px-3.5 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-xs font-semibold shadow-xs flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
           >
             <RefreshCw className={cn("w-3.5 h-3.5 text-blue-100", isSyncing && "animate-spin")} />
             <span>{isSyncing ? "Syncing..." : "Sync Live Reviews"}</span>
@@ -175,33 +175,35 @@ export default function GoogleReviewsSyncPage() {
       )}
 
       {/* Place ID & Axiogen Review Syncer Box */}
-      <div className="p-5 rounded-xl bg-white border border-slate-200/90 shadow-[0_1px_3px_rgba(0,0,0,0.04)] space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-lg bg-blue-50 border border-blue-200 flex items-center justify-center text-blue-600 font-bold shrink-0">
+      <div className="p-4 sm:p-5 rounded-2xl bg-white border border-slate-200/90 shadow-[0_1px_3px_rgba(0,0,0,0.04)] space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="flex items-start sm:items-center gap-3 min-w-0">
+            <div className="h-10 w-10 rounded-xl bg-blue-50 border border-blue-200 flex items-center justify-center text-blue-600 font-bold shrink-0 mt-0.5 sm:mt-0">
               <Globe className="w-5 h-5" />
             </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h3 className="font-semibold text-sm text-slate-900">
+            <div className="space-y-1 min-w-0 flex-1">
+              <div className="flex items-center gap-2 flex-wrap">
+                <h3 className="font-bold text-sm text-slate-900">
                   Google Maps Business Syncer
                 </h3>
-                <span className="text-[10px] font-semibold px-2 py-0.2 rounded bg-blue-50 text-blue-700 border border-blue-200">
-                  Axiogen Syncer
-                </span>
-                {hasPlaceId && (
-                  <span className="text-[10px] font-semibold px-2 py-0.2 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">
-                    Connected
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  <span className="text-[10px] font-semibold px-2 py-0.5 rounded bg-blue-50 text-blue-700 border border-blue-200">
+                    Axiogen Syncer
                   </span>
-                )}
+                  {hasPlaceId && (
+                    <span className="text-[10px] font-semibold px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200">
+                      Connected
+                    </span>
+                  )}
+                </div>
               </div>
-              <p className="text-xs text-slate-500">
+              <p className="text-xs text-slate-500 leading-relaxed">
                 Enter your Google Place ID to scrape and sync live Google reviews in real time
               </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-2 font-mono text-xs font-semibold text-slate-900 sm:text-right shrink-0">
+          <div className="flex items-center gap-2 font-mono text-xs font-semibold text-slate-900 shrink-0 bg-slate-50 sm:bg-transparent p-2 sm:p-0 rounded-lg self-start sm:self-auto">
             <Star className="w-3.5 h-3.5 fill-amber-500 text-amber-500" />
             <span>{avgGoogleRating} ★</span>
             <span className="text-slate-400 font-sans font-normal text-xs">({googleReviews.length} reviews)</span>
@@ -256,17 +258,18 @@ export default function GoogleReviewsSyncPage() {
           </div>
         </div>
 
-        <div className="flex items-center justify-between pt-1">
-          <span className="text-[11px] text-slate-500">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-2">
+          <span className="text-[11px] text-slate-500 break-all">
             Powered by <code className="text-blue-600 font-mono">api.axiogen.in/v1/reviews/scrape</code>
           </span>
 
           <Button
             onClick={handleSyncRealGoogleReviews}
             disabled={isSyncing}
-            className="bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg text-xs h-8.5 px-4 shadow-xs cursor-pointer transition-colors"
+            className="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg text-xs h-9 px-4 shadow-xs cursor-pointer transition-colors"
           >
-            {isSyncing ? "Syncing..." : "Connect & Sync Live Reviews"}
+            <RefreshCw className={cn("w-3.5 h-3.5 mr-1.5", isSyncing && "animate-spin")} />
+            <span>{isSyncing ? "Syncing..." : "Connect & Sync Live Reviews"}</span>
           </Button>
         </div>
       </div>

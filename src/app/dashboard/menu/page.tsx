@@ -191,11 +191,11 @@ export default function MenuStudioPage() {
           </p>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
           <Button
             onClick={() => setIsCategoryModalOpen(true)}
             variant="outline"
-            className="h-9 px-3 text-xs font-semibold text-slate-700 bg-white border-slate-200/90 hover:bg-slate-50 hover:text-slate-900 shadow-2xs rounded-lg flex items-center gap-1.5"
+            className="w-full sm:w-auto h-9 px-3 text-xs font-semibold text-slate-700 bg-white border-slate-200/90 hover:bg-slate-50 hover:text-slate-900 shadow-2xs rounded-lg flex items-center justify-center gap-1.5"
           >
             <FolderPlus className="w-3.5 h-3.5 text-slate-500" />
             <span>Add Category</span>
@@ -206,7 +206,7 @@ export default function MenuStudioPage() {
               setEditingDish(null);
               setIsModalOpen(true);
             }}
-            className="h-9 px-3.5 text-xs font-semibold text-white bg-slate-900 hover:bg-slate-800 shadow-xs rounded-lg flex items-center gap-1.5 transition-colors"
+            className="w-full sm:w-auto h-9 px-3.5 text-xs font-semibold text-white bg-slate-900 hover:bg-slate-800 shadow-xs rounded-lg flex items-center justify-center gap-1.5 transition-colors"
           >
             <Plus className="w-3.5 h-3.5 text-orange-400" />
             <span>Add New Dish</span>

@@ -247,12 +247,12 @@ export function GoogleReviewsSection({
           </div>
 
           {/* Quick Action CTA Buttons */}
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto shrink-0">
             <a
               href={googleMapsUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="h-10 px-3.5 rounded-xl border border-stone-200 bg-white hover:bg-stone-50 text-stone-700 text-xs font-bold flex items-center gap-1.5 shadow-2xs transition-colors shrink-0"
+              className="h-10 px-3.5 rounded-xl border border-stone-200 bg-white hover:bg-stone-50 text-stone-700 text-xs font-bold flex items-center justify-center gap-1.5 shadow-2xs transition-colors"
             >
               <span>Google Maps</span>
               <ExternalLink className="w-3.5 h-3.5 text-stone-400" />
@@ -262,7 +262,7 @@ export function GoogleReviewsSection({
               href={googleWriteReviewUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="h-10 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-md shadow-blue-600/20 flex items-center gap-1.5 hover:scale-105 active:scale-95 transition-all cursor-pointer shrink-0"
+              className="h-10 px-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold shadow-md shadow-blue-600/20 flex items-center justify-center gap-1.5 hover:scale-105 active:scale-95 transition-all cursor-pointer"
             >
               <MessageSquarePlus className="w-4 h-4" />
               <span>Write Google Review</span>

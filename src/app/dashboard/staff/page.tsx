@@ -94,7 +94,7 @@ export default function StaffManagementPage() {
 
         <Button
           onClick={() => setIsInviteOpen(true)}
-          className="bg-slate-900 hover:bg-slate-800 text-white font-semibold rounded-lg h-9 px-3.5 text-xs shadow-xs flex items-center gap-1.5 cursor-pointer transition-colors"
+          className="w-full sm:w-auto bg-slate-900 hover:bg-slate-800 text-white font-semibold rounded-lg h-9 px-3.5 text-xs shadow-xs flex items-center justify-center gap-1.5 cursor-pointer transition-colors"
         >
           <Plus className="w-3.5 h-3.5 text-slate-300" />
           <span>Invite Team Member</span>
@@ -143,7 +143,8 @@ export default function StaffManagementPage() {
 
       {/* Staff Table */}
       <div className="bg-white rounded-xl border border-slate-200/90 overflow-hidden shadow-[0_1px_3px_rgba(0,0,0,0.04)]">
-        <table className="w-full text-left text-xs">
+        <div className="overflow-x-auto w-full">
+          <table className="w-full text-left text-xs min-w-[540px]">
           <thead className="bg-slate-50 text-slate-500 border-b border-slate-200 uppercase font-semibold text-[10px] tracking-wider">
             <tr>
               <th className="px-4 py-3">Name & Email</th>
@@ -203,6 +204,7 @@ export default function StaffManagementPage() {
             ))}
           </tbody>
         </table>
+        </div>
       </div>
 
       {/* Invite Modal */}

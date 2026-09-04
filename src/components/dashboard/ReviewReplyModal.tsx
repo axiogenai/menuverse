@@ -25,11 +25,11 @@ export function ReviewReplyModal({
 
   const handleGenerateTemplate = (type: "thank" | "apologize" | "invite") => {
     if (type === "thank") {
-      setReplyText(`Thank you so much ${review.displayName}! We are thrilled you enjoyed the dish. Chef Marco and our culinary team look forward to hosting you again soon!`);
+      setReplyText(`Thank you so much ${review.displayName}! We are thrilled you enjoyed the dish. Our culinary team at Hotel Gypsy looks forward to hosting you again soon!`);
     } else if (type === "apologize") {
       setReplyText(`Thank you for your candid feedback, ${review.displayName}. We hold our culinary standards high and our executive chef has taken note of your comments to ensure consistent perfection on your next visit.`);
     } else {
-      setReplyText(`Thank you for visiting us, ${review.displayName}! We would love for you to try our dinner specials next time. Saluti!`);
+      setReplyText(`Thank you for dining with us, ${review.displayName}! We would love for you to try our royal heritage specials next time. Warm regards from Hotel Gypsy.`);
     }
   };
 

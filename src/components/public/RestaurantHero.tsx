@@ -79,7 +79,7 @@ export function RestaurantHero({ restaurant, onOpenQRModal }: RestaurantHeroProp
         {/* Floating Ambient Restaurant Identity in Cover Banner */}
         <div className="absolute bottom-3 sm:bottom-4 left-3.5 sm:left-5 right-3.5 sm:right-5 z-20 pointer-events-none">
           <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-amber-300 block mb-0.5 drop-shadow">
-            {restaurant.cuisineType || "Authentic Italian & Fine Dining"} • Verified Social Menu
+            {restaurant.cuisineType || "5-Star Luxury Dining & Royal Cuisine"} • Verified Social Menu
           </span>
         </div>
       </div>
@@ -129,17 +129,17 @@ export function RestaurantHero({ restaurant, onOpenQRModal }: RestaurantHeroProp
         </div>
 
         {/* Action / Nav Shortcut Buttons */}
-        <div className="flex items-center gap-2 pt-1 md:pt-0 shrink-0">
+        <div className="flex items-center gap-2 pt-1 md:pt-0 w-full sm:w-auto shrink-0">
           <a
             href="#google-reviews"
-            className="px-3.5 py-2.5 rounded-xl bg-white border border-stone-200 hover:bg-stone-50 text-stone-800 font-bold text-xs shadow-xs hover:scale-105 active:scale-95 transition-all text-center flex items-center gap-1.5"
+            className="flex-1 sm:flex-none px-3.5 py-2.5 rounded-xl bg-white border border-stone-200 hover:bg-stone-50 text-stone-800 font-bold text-xs shadow-xs hover:scale-105 active:scale-95 transition-all text-center flex items-center justify-center gap-1.5"
           >
             <Star className="w-3.5 h-3.5 fill-[#FBBC04] text-[#FBBC04]" />
             <span>Google Reviews</span>
           </a>
           <a
             href="#menu-categories"
-            className="px-4 py-2.5 rounded-xl bg-orange-600 hover:bg-orange-500 text-white font-bold text-xs shadow-md shadow-orange-600/20 hover:scale-105 active:scale-95 transition-all text-center"
+            className="flex-1 sm:flex-none px-4 py-2.5 rounded-xl bg-orange-600 hover:bg-orange-500 text-white font-bold text-xs shadow-md shadow-orange-600/20 hover:scale-105 active:scale-95 transition-all text-center"
           >
             Explore Menu
           </a>

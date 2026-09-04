@@ -108,7 +108,7 @@ export default function RestaurantSettingsPage() {
           type="button"
           onClick={handleResetData}
           variant="outline"
-          className="rounded-lg border-rose-200 text-rose-600 hover:bg-rose-50 font-semibold text-xs h-8.5 flex items-center gap-1.5 cursor-pointer"
+          className="w-full sm:w-auto rounded-lg border-rose-200 text-rose-600 hover:bg-rose-50 font-semibold text-xs h-8.5 flex items-center justify-center gap-1.5 cursor-pointer"
         >
           <Trash2 className="w-3.5 h-3.5" />
           <span>Reset All Data to Blank Slate</span>
